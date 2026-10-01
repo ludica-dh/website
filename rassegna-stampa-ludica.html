@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rassegna stampa</title>
+
+  <style>
+    :root {
+      --rs-card: #ffffff;
+      --rs-text: #1f2937;
+      --rs-muted: #667085;
+      --rs-border: #e5e7eb;
+      --rs-accent: #1d4ed8;
+      --rs-accent-soft: #eef4ff;
+      --rs-date-bg: #f3f4f6;
+      --rs-date-text: #4b5563;
+      --rs-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+      --rs-radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: transparent;
+      color: var(--rs-text);
+    }
+
+    .rassegna-stampa-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 42px 18px;
+    }
+
+    .rs-intro {
+      text-align: center;
+      margin-bottom: 34px;
+    }
+
+    .rs-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: var(--rs-accent-soft);
+      color: var(--rs-accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .rs-eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--rs-accent);
+    }
+
+    .rs-intro h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: #111827;
+    }
+
+    .rs-intro p {
+      max-width: 620px;
+      margin: 16px auto 0;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--rs-muted);
+    }
+
+    .rs-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+      padding: 14px 16px;
+      border: 1px solid var(--rs-border);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .rs-count {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--rs-muted);
+    }
+
+    .rs-search {
+      width: min(360px, 100%);
+      border: 1px solid var(--rs-border);
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-size: 0.95rem;
+      outline: none;
+      background: #ffffff;
+      color: var(--rs-text);
+    }
+
+    .rs-search:focus {
+      border-color: var(--rs-accent);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.12);
+    }
+
+    .rs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .rs-card {
+      position: relative;
+      min-height: 245px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius);
+      background:
+        radial-gradient(circle at top right, rgba(29, 78, 216, 0.10), transparent 36%),
+        var(--rs-card);
+      box-shadow: var(--rs-shadow);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .rs-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(29, 78, 216, 0.35);
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.13);
+    }
+
+    .rs-card a {
+      min-height: 245px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .rs-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .rs-testata {
+      max-width: 100%;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--rs-accent-soft);
+      color: var(--rs-accent);
+      font-size: 0.82rem;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rs-data {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--rs-date-bg);
+      color: var(--rs-date-text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .rs-title {
+      margin: 0;
+      font-size: 1.18rem;
+      line-height: 1.32;
+      letter-spacing: -0.02em;
+      color: #111827;
+    }
+
+    .rs-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-top: 24px;
+      color: var(--rs-muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .rs-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #111827;
+      color: #ffffff;
+      transition: transform 0.22s ease;
+    }
+
+    .rs-card:hover .rs-arrow {
+      transform: translateX(3px);
+    }
+
+    .rs-state {
+      grid-column: 1 / -1;
+      padding: 34px 20px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 20px;
+      background: #ffffff;
+      text-align: center;
+      color: var(--rs-muted);
+      font-weight: 600;
+    }
+
+    .rs-error {
+      color: #b42318;
+      border-color: #fecdca;
+      background: #fff5f5;
+    }
+
+    @media (max-width: 900px) {
+      .rs-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .rassegna-stampa-wrapper {
+        padding: 28px 12px;
+      }
+
+      .rs-intro {
+        text-align: left;
+        margin-bottom: 24px;
+      }
+
+      .rs-intro p {
+        margin-left: 0;
+      }
+
+      .rs-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .rs-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rs-card,
+      .rs-card a {
+        min-height: 210px;
+      }
+
+      .rs-card a {
+        padding: 19px;
+      }
+
+      .rs-title {
+        font-size: 1.08rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="rassegna-stampa-wrapper">
+    <section class="rs-intro">
+      <div class="rs-eyebrow">Rassegna stampa</div>
+      <h1></h1>
+      <p>
+        Una raccolta aggiornata di articoli, segnalazioni e uscite stampa sul LUDiCa e le sue attività
+      </p>
+    </section>
+
+    <section class="rs-toolbar">
+      <div id="rs-count" class="rs-count">Caricamento articoli…</div>
+
+      <input
+        id="rs-search"
+        class="rs-search"
+        type="search"
+        placeholder="Cerca per titolo, testata o data"
+        aria-label="Cerca nella rassegna stampa"
+      >
+    </section>
+
+    <section id="rs-grid" class="rs-grid">
+      <div class="rs-state">Caricamento rassegna stampa…</div>
+    </section>
+  </main>
+
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOdD9r0Df4QYR_OceikJDAbsXq4h2B9K0w7d7GgNLeddbopanFw6RRtFlPZVO4ZQp7qYMP7KPdS0cw/pub?gid=1380844179&single=true&output=csv";
+
+    const grid = document.getElementById("rs-grid");
+    const count = document.getElementById("rs-count");
+    const search = document.getElementById("rs-search");
+
+    let articoli = [];
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let current = "";
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && insideQuotes && next === '"') {
+          current += '"';
+          i++;
+        } else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === "," && !insideQuotes) {
+          row.push(current.trim());
+          current = "";
+        } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+          if (current || row.length) {
+            row.push(current.trim());
+            rows.push(row);
+            row = [];
+            current = "";
+          }
+
+          if (char === "\r" && next === "\n") {
+            i++;
+          }
+        } else {
+          current += char;
+        }
+      }
+
+      if (current || row.length) {
+        row.push(current.trim());
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function normalizza(value) {
+      return String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "")
+        .replace(/[àá]/g, "a")
+        .replace(/[èé]/g, "e")
+        .replace(/[ìí]/g, "i")
+        .replace(/[òó]/g, "o")
+        .replace(/[ùú]/g, "u");
+    }
+
+    function escapeHTML(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function parseData(value) {
+      const raw = String(value || "").trim();
+
+      if (!raw) {
+        return 0;
+      }
+
+      let match = raw.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+
+      if (match) {
+        const giorno = parseInt(match[1], 10);
+        const mese = parseInt(match[2], 10) - 1;
+        const anno = parseInt(match[3], 10);
+
+        return new Date(anno, mese, giorno).getTime();
+      }
+
+      match = raw.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+
+      if (match) {
+        const anno = parseInt(match[1], 10);
+        const mese = parseInt(match[2], 10) - 1;
+        const giorno = parseInt(match[3], 10);
+
+        return new Date(anno, mese, giorno).getTime();
+      }
+
+      if (/^\d+(\.\d+)?$/.test(raw)) {
+        const seriale = parseFloat(raw);
+
+        if (seriale > 20000 && seriale < 80000) {
+          const excelEpoch = new Date(1899, 11, 30);
+          return excelEpoch.getTime() + seriale * 24 * 60 * 60 * 1000;
+        }
+      }
+
+      const fallback = new Date(raw).getTime();
+
+      return Number.isNaN(fallback) ? 0 : fallback;
+    }
+
+    function formattaData(value) {
+      const raw = String(value || "").trim();
+
+      if (!raw) {
+        return "";
+      }
+
+      const timestamp = parseData(raw);
+
+      if (!timestamp) {
+        return raw;
+      }
+
+      return new Intl.DateTimeFormat("it-IT", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      }).format(new Date(timestamp));
+    }
+
+    function render(lista) {
+      if (!lista.length) {
+        grid.innerHTML = '<div class="rs-state">Nessun risultato trovato.</div>';
+        count.textContent = "0 articoli";
+        return;
+      }
+
+      count.textContent = lista.length === 1
+        ? "1 articolo"
+        : lista.length + " articoli";
+
+      grid.innerHTML = lista.map(item => {
+        const titolo = escapeHTML(item.titolo);
+        const testata = escapeHTML(item.testata);
+        const data = escapeHTML(item.dataFormattata);
+        const link = escapeHTML(item.link);
+
+        return `
+          <article class="rs-card">
+            <a href="${link}" target="_blank" rel="noopener noreferrer">
+              <div>
+                <div class="rs-meta">
+                  <div class="rs-testata">${testata}</div>
+                  ${data ? `<div class="rs-data">${data}</div>` : ""}
+                </div>
+
+                <h2 class="rs-title">${titolo}</h2>
+              </div>
+
+              <div class="rs-bottom">
+                <span>Leggi l’articolo</span>
+                <span class="rs-arrow" aria-hidden="true">→</span>
+              </div>
+            </a>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function filtra() {
+      const q = search.value.toLowerCase().trim();
+
+      if (!q) {
+        render(articoli);
+        return;
+      }
+
+      const filtrati = articoli.filter(item => {
+        return item.titolo.toLowerCase().includes(q) ||
+               item.testata.toLowerCase().includes(q) ||
+               item.dataOriginale.toLowerCase().includes(q) ||
+               item.dataFormattata.toLowerCase().includes(q);
+      });
+
+      render(filtrati);
+    }
+
+    async function carica() {
+      try {
+        const response = await fetch(CSV_URL, {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error("Errore HTTP " + response.status);
+        }
+
+        const text = await response.text();
+        const rows = parseCSV(text);
+
+        if (!rows || rows.length < 2) {
+          throw new Error("Il foglio è vuoto oppure non contiene righe dati.");
+        }
+
+        const headers = rows[0].map(normalizza);
+
+        const titoloIndex = headers.indexOf("titolo");
+        const testataIndex = headers.indexOf("testata");
+        const linkIndex = headers.indexOf("link");
+
+        let dataIndex = headers.indexOf("data");
+
+        if (dataIndex === -1) {
+          dataIndex = headers.indexOf("date");
+        }
+
+        if (
+          titoloIndex === -1 ||
+          testataIndex === -1 ||
+          linkIndex === -1
+        ) {
+          throw new Error("Colonne obbligatorie non trovate. Servono: Titolo, testata, link.");
+        }
+
+        articoli = rows.slice(1)
+          .map(row => {
+            const dataOriginale = dataIndex !== -1 ? row[dataIndex] || "" : "";
+            const timestamp = parseData(dataOriginale);
+
+            return {
+              titolo: row[titoloIndex] || "",
+              testata: row[testataIndex] || "",
+              link: row[linkIndex] || "",
+              dataOriginale: dataOriginale,
+              dataTimestamp: timestamp,
+              dataFormattata: formattaData(dataOriginale)
+            };
+          })
+          .filter(item => item.titolo && item.testata && item.link)
+          .sort((a, b) => {
+            return b.dataTimestamp - a.dataTimestamp;
+          });
+
+        render(articoli);
+
+      } catch (error) {
+        console.error("Errore rassegna stampa:", error);
+
+        grid.innerHTML = `
+          <div class="rs-state rs-error">
+            Errore nel caricamento della rassegna stampa.
+            <br>
+            Verifica che il foglio abbia almeno le colonne:
+            <strong>Titolo</strong>, <strong>testata</strong>, <strong>link</strong>.
+            <br>
+            Per mostrare e ordinare le date serve anche la colonna:
+            <strong>data</strong>.
+          </div>
+        `;
+
+        count.textContent = "Errore di caricamento";
+      }
+    }
+
+    search.addEventListener("input", filtra);
+
+    carica();
+  </script>
+</body>
+</html>
