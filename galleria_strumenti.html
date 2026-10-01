@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Galleria alimentata da Google Sheets">
+  <title>Galleria strumenti</title>
+
+  <style>
+    :root {
+      --gallery-background: #ffffff;
+      --text-color: #161616;
+      --muted-color: #4b4b4b;
+      --line-color: #dddddd;
+      --accent-color: #2463eb;
+      --columns: 4;
+      --gap-x: 28px;
+      --gap-y: 38px;
+      --icon-size: 88px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--gallery-background);
+      color: var(--text-color);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .gallery-shell {
+      width: min(100%, 1440px);
+      margin: 0 auto;
+      padding: 30px 40px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+      column-gap: var(--gap-x);
+      row-gap: var(--gap-y);
+    }
+
+    .search-area { max-width: 680px; margin: 0 auto 42px; }
+    .search-label { display: block; margin-bottom: 9px; font-size: 15px; font-weight: 700; }
+    .search-input {
+      width: 100%; min-height: 48px; padding: 11px 16px;
+      border: 1px solid #b7b7b7; border-radius: 7px;
+      background: #fff; color: var(--text-color); font: inherit; font-size: 16px;
+    }
+    .search-input:focus {
+      border-color: var(--accent-color); outline: 3px solid color-mix(in srgb, var(--accent-color) 22%, transparent);
+    }
+    .search-status { min-height: 20px; margin: 8px 0 0; color: var(--muted-color); font-size: 14px; }
+
+    .card {
+      min-width: 0;
+      padding: 0 0 16px;
+      border-bottom: 1px solid var(--line-color);
+      text-align: center;
+    }
+
+    .card-link {
+      display: flex;
+      min-height: 210px;
+      flex-direction: column;
+      align-items: center;
+      color: inherit;
+      text-decoration: none;
+      outline: none;
+    }
+
+    .card-link:hover .card-title,
+    .card-link:focus-visible .card-title { color: var(--accent-color); }
+
+    .card-link:focus-visible {
+      border-radius: 5px;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 30%, transparent);
+    }
+
+    .icon-box {
+      display: grid;
+      width: 100%;
+      height: 112px;
+      place-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-icon {
+      display: block;
+      width: var(--icon-size);
+      height: var(--icon-size);
+      object-fit: contain;
+    }
+
+    .card-title {
+      margin: 0 0 20px;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.25;
+      transition: color .18s ease;
+    }
+
+    .card-description {
+      margin: 0;
+      color: var(--muted-color);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .message {
+      max-width: 760px;
+      margin: 50px auto;
+      padding: 18px 20px;
+      border: 1px solid var(--line-color);
+      border-radius: 8px;
+      background: #fafafa;
+      line-height: 1.55;
+    }
+
+    .message[hidden] { display: none; }
+
+    @media (max-width: 1050px) {
+      :root { --columns: 3; }
+    }
+
+    @media (max-width: 760px) {
+      :root { --columns: 2; --gap-x: 18px; }
+      .gallery-shell { padding: 24px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      :root { --columns: 1; }
+      .gallery-shell { padding: 20px 16px; }
+      .card-link { min-height: 190px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="gallery-shell">
+    <div class="search-area">
+      <label class="search-label" for="gallery-search">Cerca nella galleria</label>
+      <input id="gallery-search" class="search-input" type="search"
+        placeholder="Cerca per nome o descrizione…" autocomplete="off" disabled>
+      <p id="search-status" class="search-status" aria-live="polite"></p>
+    </div>
+    <div id="message" class="message">Caricamento della galleria…</div>
+    <section id="gallery" class="gallery" aria-label="Galleria strumenti"></section>
+  </main>
+
+  <script>
+    /* ================================================================
+       CONFIGURAZIONE
+
+       Il foglio Google è pubblicato come CSV e il suo URL è impostato qui.
+       Per usare in futuro un altro foglio, sostituisci soltanto CSV_URL.
+       In Google Sheets: File > Condividi > Pubblica sul web > CSV.
+       ================================================================ */
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnbHCs4ZDmMDJYRyP5vbQ4iY97UKBfe-_THwDbICkgeHy7plN96vXHZXzi1mvWsW5dtZBY1nfoN0sI/pub?gid=1498313455&single=true&output=csv';
+
+    // "_blank" apre i link in una nuova scheda; usa "_self" per la stessa pagina.
+    const LINK_TARGET = '_blank';
+
+    const gallery = document.getElementById('gallery');
+    const message = document.getElementById('message');
+    const searchInput = document.getElementById('gallery-search');
+    const searchStatus = document.getElementById('search-status');
+    let allItems = [];
+
+    function showMessage(text) {
+      message.textContent = text;
+      message.hidden = false;
+    }
+
+    function hideMessage() {
+      message.hidden = true;
+    }
+
+    function normalizeHeader(value) {
+      return String(value || '').trim().toUpperCase();
+    }
+
+    // Parser CSV compatibile con virgole, virgolette e righe interne alle celle.
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let value = '';
+      let quoted = false;
+
+      for (let index = 0; index < text.length; index += 1) {
+        const character = text[index];
+
+        if (quoted) {
+          if (character === '"' && text[index + 1] === '"') {
+            value += '"';
+            index += 1;
+          } else if (character === '"') {
+            quoted = false;
+          } else {
+            value += character;
+          }
+        } else if (character === '"') {
+          quoted = true;
+        } else if (character === ',') {
+          row.push(value.trim());
+          value = '';
+        } else if (character === '\n') {
+          row.push(value.trim());
+          rows.push(row);
+          row = [];
+          value = '';
+        } else if (character !== '\r') {
+          value += character;
+        }
+      }
+
+      if (value || row.length) {
+        row.push(value.trim());
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function itemsFromCsv(csvText) {
+      const rows = parseCsv(csvText);
+      if (!rows.length) return [];
+
+      const headers = rows.shift().map(normalizeHeader);
+
+      const required = ['NOME', 'DESCRIZIONE', 'LINK', 'URL ICONA'];
+      const missing = required.filter(name => !headers.includes(name));
+      if (missing.length) {
+        throw new Error(`Colonne mancanti nel foglio: ${missing.join(', ')}.`);
+      }
+
+      return rows
+        .map(row => Object.fromEntries(headers.map((header, index) => [header, row[index] || ''])))
+        .filter(item => item.NOME);
+    }
+
+    function safeHttpUrl(value) {
+      if (!value) return '';
+      try {
+        const url = new URL(value, window.location.href);
+        return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+      } catch (_) {
+        return '';
+      }
+    }
+
+    function searchableText(value) {
+      return String(value || '').normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('it');
+    }
+
+    function reportHeight() {
+      window.parent.postMessage({ type: 'gallery-height', height: document.documentElement.scrollHeight }, '*');
+    }
+
+    function renderItems(items, isFiltered = false) {
+      gallery.replaceChildren(...items.map(createCard));
+      searchStatus.textContent = isFiltered
+        ? `${items.length} ${items.length === 1 ? 'risultato trovato' : 'risultati trovati'}` : '';
+      if (isFiltered && !items.length) showMessage('Nessuno strumento corrisponde alla ricerca.');
+      else if (items.length) hideMessage();
+      requestAnimationFrame(reportHeight);
+    }
+
+    function filterGallery() {
+      const query = searchableText(searchInput.value.trim());
+      if (!query) return renderItems(allItems);
+      renderItems(allItems.filter(item =>
+        searchableText(`${item.NOME} ${item.DESCRIZIONE}`).includes(query)
+      ), true);
+    }
+
+    function createCard(item) {
+      const article = document.createElement('article');
+      article.className = 'card';
+
+      const link = document.createElement('a');
+      link.className = 'card-link';
+      link.href = safeHttpUrl(item.LINK) || '#';
+      link.target = LINK_TARGET;
+      if (LINK_TARGET === '_blank') link.rel = 'noopener noreferrer';
+      link.setAttribute('aria-label', `${item.NOME}: ${item.DESCRIZIONE}`);
+
+      const iconBox = document.createElement('div');
+      iconBox.className = 'icon-box';
+
+      const iconUrl = safeHttpUrl(item['URL ICONA']);
+      if (iconUrl) {
+        const img = document.createElement('img');
+        img.className = 'card-icon';
+        img.src = iconUrl;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        img.addEventListener('error', () => img.remove());
+        iconBox.appendChild(img);
+      }
+
+      const title = document.createElement('h2');
+      title.className = 'card-title';
+      title.textContent = item.NOME;
+
+      const description = document.createElement('p');
+      description.className = 'card-description';
+      description.textContent = item.DESCRIZIONE;
+
+      link.append(iconBox, title, description);
+      article.appendChild(link);
+      return article;
+    }
+
+    async function loadGallery() {
+      try {
+        const response = await fetch(CSV_URL, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Errore HTTP ${response.status}.`);
+
+        const items = itemsFromCsv(await response.text());
+        allItems = items;
+        renderItems(items);
+        searchInput.disabled = false;
+
+        if (!items.length) showMessage('Il foglio non contiene ancora elementi da mostrare.');
+      } catch (error) {
+        console.error(error);
+        showMessage('Impossibile caricare i dati. Controlla che il foglio sia pubblicato sul web, il nome della scheda sia corretto e le quattro intestazioni coincidano.');
+      }
+    }
+
+    searchInput.addEventListener('input', filterGallery);
+    window.addEventListener('load', reportHeight);
+    window.addEventListener('resize', reportHeight);
+    loadGallery();
+  </script>
+</body>
+</html>
