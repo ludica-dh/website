@@ -5,7 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quaderni del LUDiCa</title>
   <style>
-    :root { color-scheme: light; font-family: Arial, Helvetica, sans-serif; color: #171717; background: #fff; }
+    /* =============================================================
+       PERSONALIZZAZIONE DEI TESTI: modifica i valori qui sotto.
+
+       Font: puoi scrivere, per esempio, Georgia, serif oppure
+       'Times New Roman', serif. Un font non installato sul dispositivo
+       richiede di essere caricato separatamente (es. con @font-face).
+
+       Dimensioni: aumenta o diminuisci il numero prima di px:
+       26px -> 30px rende più grandi i titoli delle schede.
+       Le modifiche qui valgono sia su computer sia su telefono.
+       ============================================================= */
+    :root {
+      --font-titoli: Arial, Helvetica, sans-serif;   /* titolo di ogni quaderno */
+      --font-sinossi: Arial, Helvetica, sans-serif;  /* testo descrittivo */
+      --font-pulsanti: Arial, Helvetica, sans-serif; /* pulsante Leggi il PDF */
+
+      --dimensione-titoli: 26px;
+      --dimensione-sinossi: 17px;
+      --dimensione-pulsanti: 15px;
+
+      --colore-testo: #171717; /* colore dei titoli e delle sinossi */
+      color-scheme: light;
+      font-family: var(--font-sinossi);
+      color: var(--colore-testo);
+      background: #fff;
+    }
     * { box-sizing: border-box; }
     body { margin: 0; }
     .catalogo { max-width: 1260px; margin: 0 auto; padding: 24px clamp(16px, 4vw, 46px) 56px; }
@@ -15,10 +40,10 @@
     .copertina img { display: block; width: 100%; height: 100%; object-fit: contain; }
     .copertina-vuota { display: grid; place-items: center; padding: 24px; color: #656565; text-align: center; font-size: 1rem; }
     .contenuto { display: flex; flex: 1; flex-direction: column; padding: 21px 22px 25px; }
-    .titolo { margin: 0 0 19px; font-size: clamp(1.28rem, 2vw, 1.68rem); line-height: 1.25; font-weight: 700; }
-    .sinossi { margin: 0; font-size: 1.08rem; line-height: 1.56; white-space: pre-line; overflow-wrap: anywhere; }
+    .titolo { margin: 0 0 19px; font-family: var(--font-titoli); font-size: var(--dimensione-titoli); line-height: 1.25; font-weight: 700; }
+    .sinossi { margin: 0; font-family: var(--font-sinossi); font-size: var(--dimensione-sinossi); line-height: 1.56; white-space: pre-line; overflow-wrap: anywhere; }
     .azioni { margin-top: auto; padding-top: 25px; }
-    .pdf { display: inline-block; border: 1px solid #191919; border-radius: 5px; padding: 11px 15px; color: #191919; font-weight: 700; font-size: .95rem; text-decoration: none; }
+    .pdf { display: inline-block; border: 1px solid #191919; border-radius: 5px; padding: 11px 15px; color: #191919; font-family: var(--font-pulsanti); font-weight: 700; font-size: var(--dimensione-pulsanti); text-decoration: none; }
     .pdf:hover, .pdf:focus-visible { color: white; background: #191919; }
     .messaggio { margin: 20px 0; color: #404040; font-size: 1rem; line-height: 1.5; }
     .messaggio.errore { color: #8a2424; }
@@ -37,6 +62,15 @@
 
     const griglia = document.getElementById('griglia');
     const stato = document.getElementById('stato');
+
+    // Comunica a WordPress l'altezza effettiva della pagina incorporata.
+    function comunicaAltezza() {
+      const altezza = Math.ceil(Math.max(document.body.scrollHeight, document.documentElement.scrollHeight));
+      window.parent.postMessage({ tipo: 'ludica-quaderni:altezza', altezza }, '*');
+    }
+    new ResizeObserver(comunicaAltezza).observe(document.body);
+    window.addEventListener('load', comunicaAltezza);
+    document.fonts?.ready.then(comunicaAltezza);
 
     // Gestisce virgolette, virgole nei testi e ritorni a capo dentro una cella del CSV.
     function leggiCSV(testo) {
@@ -152,10 +186,12 @@
         if (!schede.length) { stato.textContent = 'Nessun quaderno disponibile.'; return; }
         griglia.replaceChildren(...schede.map(creaScheda));
         stato.hidden = true;
+        comunicaAltezza();
       } catch (errore) {
         console.error('Impossibile caricare i quaderni:', errore);
         stato.classList.add('errore');
         stato.textContent = 'Non è stato possibile caricare i quaderni. Controlla che il foglio Google sia pubblicato sul Web come CSV e che le intestazioni delle colonne siano corrette.';
+        comunicaAltezza();
       }
     }
     avvia();
