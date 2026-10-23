@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Galleria risorse</title>
+
+  <style>
+    /* =========================================================
+       PERSONALIZZAZIONE
+       Tutte le regole sono limitate al contenitore .ludica-risorse.
+       ========================================================= */
+
+    .ludica-risorse {
+      --colore-primario: #7928ca;
+      --colore-hover: #5b21a2;
+      --colore-testo: #252333;
+      --colore-secondario: #625f70;
+      --colore-bordo: #e7e3ee;
+      --colore-sfondo: #ffffff;
+      --colore-tenue: #f7f3fc;
+
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --testo-titolo-pagina: clamp(26px, 4vw, 38px);
+      --testo-introduzione: 16px;
+      --testo-ricerca: 16px;
+      --testo-filtri: 14px;
+      --testo-conteggio: 14px;
+      --testo-titolo-scheda: 20px;
+      --testo-descrizione: 15px;
+      --testo-badge: 12px;
+      --testo-pulsante: 14px;
+      --testo-messaggi: 16px;
+      --dimensione-icona: 68px;
+
+      --spazio-griglia: 22px;
+      --raggio-scheda: 18px;
+      --larghezza-massima: 1440px;
+
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      color: var(--colore-testo);
+      background: var(--colore-sfondo);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.6;
+      text-align: left;
+      color-scheme: light;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .ludica-risorse,
+    .ludica-risorse *,
+    .ludica-risorse *::before,
+    .ludica-risorse *::after {
+      box-sizing: border-box;
+    }
+
+    /* Il body ha la stessa classe, così anche il reset resta isolato. */
+    body.ludica-risorse {
+      padding: 0;
+    }
+
+    .ludica-risorse .lr-contenuto {
+      width: 100%;
+      max-width: var(--larghezza-massima);
+      margin-inline: auto;
+      padding: clamp(16px, 3vw, 40px);
+    }
+
+    .ludica-risorse .lr-intestazione {
+      margin-bottom: 24px;
+    }
+
+    .ludica-risorse .lr-titolo-pagina {
+      margin: 0 0 8px;
+      color: var(--colore-testo);
+      font: 750 var(--testo-titolo-pagina)/1.2 var(--font);
+      letter-spacing: -0.025em;
+    }
+
+    .ludica-risorse .lr-introduzione {
+      margin: 0;
+      color: var(--colore-secondario);
+      font-size: var(--testo-introduzione);
+    }
+
+    .ludica-risorse .lr-strumenti {
+      margin-bottom: 26px;
+    }
+
+    .ludica-risorse .lr-label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: var(--testo-filtri);
+      font-weight: 650;
+    }
+
+    .ludica-risorse .lr-ricerca {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      min-height: 48px;
+      margin: 0;
+      padding: 12px 15px;
+      border: 1px solid var(--colore-bordo);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--colore-testo);
+      font: 400 var(--testo-ricerca)/1.4 var(--font);
+      box-shadow: none;
+      appearance: none;
+    }
+
+    .ludica-risorse .lr-ricerca::placeholder {
+      color: #787382;
+      opacity: 1;
+    }
+
+    .ludica-risorse .lr-filtri {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0 12px;
+    }
+
+    .ludica-risorse .lr-filtro,
+    .ludica-risorse .lr-riprova {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 44px;
+      margin: 0;
+      padding: 9px 16px;
+      border: 1px solid var(--colore-bordo);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--colore-testo);
+      font: 600 var(--testo-filtri)/1.3 var(--font);
+      text-decoration: none;
+      text-transform: none;
+      letter-spacing: normal;
+      cursor: pointer;
+      box-shadow: none;
+      transition: background .18s ease, border-color .18s ease;
+    }
+
+    .ludica-risorse .lr-filtro:hover,
+    .ludica-risorse .lr-riprova:hover {
+      border-color: var(--colore-primario);
+      background: var(--colore-tenue);
+    }
+
+    .ludica-risorse .lr-filtro[aria-pressed="true"] {
+      border-color: var(--colore-primario);
+      background: var(--colore-primario);
+      color: #fff;
+    }
+
+    .ludica-risorse .lr-conteggio {
+      margin: 0;
+      color: var(--colore-secondario);
+      font-size: var(--testo-conteggio);
+    }
+
+    /* Mobile first: una colonna, poi due, tre e quattro. */
+    .ludica-risorse .lr-griglia {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--spazio-griglia);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    @media (min-width: 600px) {
+      .ludica-risorse .lr-griglia {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 960px) {
+      .ludica-risorse .lr-griglia {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1240px) {
+      .ludica-risorse .lr-griglia {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .ludica-risorse .lr-elemento {
+      display: flex;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .ludica-risorse .lr-scheda {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      min-width: 0;
+      padding: 24px;
+      border: 1px solid var(--colore-bordo);
+      border-radius: var(--raggio-scheda);
+      background: #fff;
+      box-shadow: 0 4px 18px rgb(35 20 60 / 5%);
+      overflow-wrap: anywhere;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    @media (hover: hover) {
+      .ludica-risorse .lr-scheda:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgb(35 20 60 / 10%);
+      }
+    }
+
+    .ludica-risorse .lr-icona {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      width: var(--dimensione-icona);
+      height: var(--dimensione-icona);
+      margin-bottom: 20px;
+      border-radius: 14px;
+      background: var(--colore-tenue);
+      color: var(--colore-primario);
+      font-size: 32px;
+      line-height: 1;
+      overflow: hidden;
+    }
+
+    .ludica-risorse .lr-icona img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 7px;
+      object-fit: contain;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .ludica-risorse .lr-badge {
+      display: inline-block;
+      max-width: 100%;
+      margin-bottom: 12px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: var(--colore-tenue);
+      color: var(--colore-hover);
+      font-size: var(--testo-badge);
+      font-weight: 650;
+    }
+
+    .ludica-risorse .lr-titolo {
+      margin: 0 0 10px;
+      color: var(--colore-primario);
+      font: 700 var(--testo-titolo-scheda)/1.3 var(--font);
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .ludica-risorse .lr-descrizione {
+      margin: 0 0 24px;
+      color: var(--colore-secondario);
+      font: 400 var(--testo-descrizione)/1.65 var(--font);
+      white-space: pre-line;
+    }
+
+    .ludica-risorse .lr-link {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      max-width: 100%;
+      margin-top: auto;
+      padding: 10px 14px;
+      border: 1px solid var(--colore-primario);
+      border-radius: 10px;
+      background: var(--colore-primario);
+      color: #fff;
+      font: 650 var(--testo-pulsante)/1.4 var(--font);
+      text-decoration: none;
+      box-shadow: none;
+      transition: background .18s ease;
+    }
+
+    .ludica-risorse .lr-link:hover {
+      background: var(--colore-hover);
+      border-color: var(--colore-hover);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .ludica-risorse .lr-link-assente {
+      margin-top: auto;
+      color: var(--colore-secondario);
+      font-size: var(--testo-pulsante);
+    }
+
+    .ludica-risorse .lr-messaggio {
+      margin: 18px 0;
+      padding: 22px;
+      border: 1px solid var(--colore-bordo);
+      border-radius: 14px;
+      background: var(--colore-tenue);
+      font-size: var(--testo-messaggi);
+    }
+
+    .ludica-risorse .lr-messaggio p {
+      margin: 0 0 12px;
+    }
+
+    .ludica-risorse .lr-messaggio p:last-child {
+      margin-bottom: 0;
+    }
+
+    .ludica-risorse :is(input, button, a):focus-visible {
+      outline: 3px solid var(--colore-primario);
+      outline-offset: 4px;
+    }
+
+    .ludica-risorse [hidden] {
+      display: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ludica-risorse *,
+      .ludica-risorse *::before,
+      .ludica-risorse *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="ludica-risorse">
+  <main class="lr-contenuto" data-lr-gallery>
+    <header class="lr-intestazione">
+      <h1 class="lr-titolo-pagina">Esplora le risorse</h1>
+      <p class="lr-introduzione">
+        Cerca una risorsa o seleziona una tipologia.
+      </p>
+    </header>
+
+    <section class="lr-strumenti" aria-label="Ricerca e filtri" hidden>
+      <label class="lr-label">
+        Cerca nelle risorse
+        <input
+          class="lr-ricerca"
+          type="search"
+          placeholder="Scrivi un titolo o una parola chiave…"
+          autocomplete="off"
+          enterkeyhint="search"
+        >
+      </label>
+
+      <div
+        class="lr-filtri"
+        role="group"
+        aria-label="Filtra per tipologia"
+      ></div>
+
+      <p class="lr-conteggio" role="status" aria-live="polite"
+         aria-atomic="true"></p>
+    </section>
+
+    <div class="lr-messaggio" role="status" aria-live="polite">
+      <p>Caricamento delle risorse…</p>
+    </div>
+
+    <ul class="lr-griglia" aria-label="Risorse" aria-busy="true"></ul>
+
+    <noscript>
+      <p class="lr-messaggio">
+        Abilita JavaScript per visualizzare la galleria.
+      </p>
+    </noscript>
+  </main>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const root = document.querySelector("[data-lr-gallery]");
+    if (!root) return;
+
+    const CSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnbHCs4ZDmMDJYRyP5vbQ4iY97UKBfe-_THwDbICkgeHy7plN96vXHZXzi1mvWsW5dtZBY1nfoN0sI/pub?gid=763305469&single=true&output=csv";
+
+    const PAPA_CDN =
+      "https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js";
+
+    const grid = root.querySelector(".lr-griglia");
+    const tools = root.querySelector(".lr-strumenti");
+    const search = root.querySelector(".lr-ricerca");
+    const filters = root.querySelector(".lr-filtri");
+    const count = root.querySelector(".lr-conteggio");
+    const message = root.querySelector(".lr-messaggio");
+
+    let resources = [];
+    let activeType = "";
+    let loading = false;
+
+    const clean = value => String(value ?? "").trim();
+
+    // Ricerca insensibile a maiuscole e accenti.
+    const normalize = value => clean(value)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLocaleLowerCase("it");
+
+    function make(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    // Accetta solo URL web assoluti. Supporta anche www.example.com.
+    // Non inserisce mai HTML proveniente dalle celle del CSV.
+    function webURL(value) {
+      let text = clean(value);
+      if (!text) return null;
+
+      if (/^www\./i.test(text)) text = "https://" + text;
+      if (text.startsWith("//")) text = "https:" + text;
+
+      try {
+        const url = new URL(text);
+        return ["https:", "http:"].includes(url.protocol) ? url.href : null;
+      } catch {
+        return null;
+      }
+    }
+
+    /*
+      ICONA può contenere:
+      - URL di un'immagine;
+      - un'emoji;
+      - uno dei nomi qui sotto, anche come classe "fa fa-book".
+      I nomi sconosciuti e le immagini non disponibili usano il fallback.
+      Non è necessario caricare una libreria di font per le icone.
+    */
+    const namedIcons = {
+      book: "📚", libro: "📚", library: "📚",
+      image: "🖼️", images: "🖼️", immagine: "🖼️",
+      camera: "📷", video: "🎬", film: "🎬",
+      music: "🎵", audio: "🎧", headphones: "🎧",
+      globe: "🌐", web: "🌐",
+      map: "🗺️", mappa: "🗺️",
+      archive: "🗃️", archivio: "🗃️",
+      database: "🗄️",
+      file: "📄", document: "📄", "file-pdf": "📄",
+      download: "⬇️", link: "🔗",
+      "graduation-cap": "🎓", university: "🏛️",
+      landmark: "🏛️", museum: "🏛️",
+      tools: "🛠️", wrench: "🛠️", code: "💻",
+      search: "🔎", "magnifying-glass": "🔎"
+    };
+
+    function fallbackIcon(value) {
+      const text = clean(value);
+
+      const tokens = text.toLowerCase().split(/\s+/);
+      for (const token of tokens) {
+        const key = token.replace(/^(?:fa-|bi-|icon-)/, "");
+        if (namedIcons[key]) return namedIcons[key];
+      }
+
+      // Consente una breve sequenza emoji, senza mostrare classi sconosciute.
+      if (
+        text.length <= 20 &&
+        /\p{Extended_Pictographic}/u.test(text)
+      ) {
+        return text;
+      }
+
+      return "🔗";
+    }
+
+    function createIcon(value) {
+      const box = make("div", "lr-icona");
+      box.setAttribute("aria-hidden", "true");
+
+      const fallback = fallbackIcon(value);
+      box.textContent = fallback;
+
+      const url = webURL(value);
+      if (!url) return box;
+
+      const img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.referrerPolicy = "no-referrer";
+
+      img.addEventListener("error", () => {
+        box.textContent = fallback;
+      }, { once: true });
+
+      img.src = url;
+      box.replaceChildren(img);
+      return box;
+    }
+
+    function createCard(item) {
+      const li = make("li", "lr-elemento");
+      const card = make("article", "lr-scheda");
+
+      card.append(
+        createIcon(item.icon),
+        make("span", "lr-badge", item.type),
+        make("h2", "lr-titolo", item.name)
+      );
+
+      if (item.description) {
+        card.append(make("p", "lr-descrizione", item.description));
+      }
+
+      const url = webURL(item.link);
+
+      if (url) {
+        const link = make("a", "lr-link", "Apri risorsa");
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.setAttribute(
+          "aria-label",
+          "Apri risorsa: " + item.name + " (nuova scheda)"
+        );
+
+        const arrow = make("span", "", "↗");
+        arrow.setAttribute("aria-hidden", "true");
+        link.append(arrow);
+        card.append(link);
+      } else {
+        card.append(
+          make("span", "lr-link-assente", "Link non disponibile")
+        );
+      }
+
+      li.append(card);
+      return li;
+    }
+
+    function showMessage(text, retry = false) {
+      message.hidden = false;
+      message.replaceChildren(make("p", "", text));
+
+      if (retry) {
+        const button = make("button", "lr-riprova", "Riprova");
+        button.type = "button";
+        button.addEventListener("click", loadResources);
+        message.append(button);
+      }
+
+      scheduleHeight();
+    }
+
+    function render() {
+      const terms = normalize(search.value).split(/\s+/).filter(Boolean);
+
+      const visible = resources.filter(item => {
+        const matchesType = !activeType || item.typeKey === activeType;
+        const matchesSearch = terms.every(term => item.searchText.includes(term));
+        return matchesType && matchesSearch;
+      });
+
+      const fragment = document.createDocumentFragment();
+      visible.forEach(item => fragment.append(createCard(item)));
+      grid.replaceChildren(fragment);
+
+      count.textContent =
+        visible.length + (visible.length === 1 ? " risorsa" : " risorse") +
+        " su " + resources.length;
+
+      if (!resources.length) {
+        showMessage("Il foglio non contiene ancora risorse con un nome.");
+      } else if (!visible.length) {
+        showMessage(
+          "Nessuna risorsa trovata. Prova un'altra ricerca o seleziona Tutti."
+        );
+      } else {
+        message.hidden = true;
+      }
+
+      scheduleHeight();
+    }
+
+    function buildFilters() {
+      const types = new Map();
+
+      resources.forEach(item => {
+        if (!types.has(item.typeKey)) {
+          types.set(item.typeKey, item.type);
+        }
+      });
+
+      const options = [
+        ["", "Tutti"],
+        ...Array.from(types.entries())
+          .sort((a, b) => a[1].localeCompare(b[1], "it"))
+      ];
+
+      filters.replaceChildren();
+
+      options.forEach(([key, label]) => {
+        const button = make("button", "lr-filtro", label);
+        button.type = "button";
+        button.dataset.type = key;
+        button.setAttribute("aria-pressed", String(key === activeType));
+
+        button.addEventListener("click", () => {
+          activeType = key;
+
+          filters.querySelectorAll("button").forEach(other => {
+            other.setAttribute(
+              "aria-pressed",
+              String(other.dataset.type === activeType)
+            );
+          });
+
+          render();
+        });
+
+        filters.append(button);
+      });
+    }
+
+    // Caricamento della libreria con timeout ed errore visibile.
+    function loadPapa() {
+      if (window.Papa && typeof window.Papa.parse === "function") {
+        return Promise.resolve(window.Papa);
+      }
+
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = PAPA_CDN;
+        script.async = true;
+
+        const timer = setTimeout(() => {
+          script.remove();
+          reject(new Error("Timeout nel caricamento di PapaParse."));
+        }, 15000);
+
+        script.onload = () => {
+          clearTimeout(timer);
+
+          if (window.Papa && typeof window.Papa.parse === "function") {
+            resolve(window.Papa);
+          } else {
+            reject(new Error("PapaParse non disponibile."));
+          }
+        };
+
+        script.onerror = () => {
+          clearTimeout(timer);
+          script.remove();
+          reject(new Error("Impossibile caricare PapaParse."));
+        };
+
+        document.head.append(script);
+      });
+    }
+
+    async function loadResources() {
+      if (loading) return;
+      loading = true;
+
+      tools.hidden = true;
+      grid.setAttribute("aria-busy", "true");
+      grid.replaceChildren();
+      showMessage("Caricamento delle risorse…");
+
+      try {
+        const Papa = await loadPapa();
+
+        const url = new URL(CSV_URL);
+        url.searchParams.set("_lr", String(Date.now()));
+
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 25000);
+
+        let csv;
+
+        try {
+          const response = await fetch(url.href, {
+            cache: "no-store",
+            credentials: "omit",
+            signal: controller.signal
+          });
+
+          if (!response.ok) {
+            throw new Error("Errore HTTP " + response.status);
+          }
+
+          csv = await response.text();
+        } finally {
+          clearTimeout(timer);
+        }
+
+        // Intercetta una pagina di errore/login al posto del CSV.
+        if (/^\s*(?:<!doctype\s+html|<html)\b/i.test(csv)) {
+          throw new Error("Google ha restituito HTML invece del CSV.");
+        }
+
+        const parsed = Papa.parse(csv, {
+          header: true,
+          skipEmptyLines: "greedy",
+          dynamicTyping: false,
+          transformHeader: header =>
+            clean(header.replace(/^\uFEFF/, "")).toUpperCase(),
+          transform: value => clean(value)
+        });
+
+        const required = [
+          "NOME", "DESCRIZIONE", "TIPO", "LINKURL", "ICONA"
+        ];
+
+        const fields = parsed.meta.fields || [];
+        const missing = required.filter(field => !fields.includes(field));
+
+        if (missing.length) {
+          throw new Error("Colonne mancanti: " + missing.join(", "));
+        }
+
+        // Evita di pubblicare dati disallineati da un CSV malformato.
+        // Un delimitatore non rilevato non è fatale per un foglio vuoto.
+        const seriousErrors = parsed.errors.filter(error =>
+          error.code !== "UndetectableDelimiter"
+        );
+
+        if (seriousErrors.length) {
+          throw new Error(
+            "CSV non valido: " + seriousErrors[0].message
+          );
+        }
+
+        resources = parsed.data
+          .filter(row => clean(row.NOME))
+          .map(row => {
+            const name = clean(row.NOME);
+            const description = clean(row.DESCRIZIONE);
+            const type = clean(row.TIPO) || "Senza categoria";
+
+            return {
+              name,
+              description,
+              type,
+              typeKey: normalize(type),
+              link: clean(row.LINKURL),
+              icon: clean(row.ICONA),
+              searchText: normalize(name + " " + description)
+            };
+          });
+
+        activeType = "";
+        search.value = "";
+        buildFilters();
+        tools.hidden = false;
+        render();
+
+      } catch (error) {
+        console.error("[Galleria risorse]", error);
+
+        showMessage(
+          "Non è stato possibile caricare le risorse. " +
+          "Verifica la connessione e che il foglio sia pubblicato sul web " +
+          "in formato CSV con le colonne NOME, DESCRIZIONE, TIPO, LINKURL e ICONA.",
+          true
+        );
+      } finally {
+        loading = false;
+        grid.setAttribute("aria-busy", "false");
+        scheduleHeight();
+      }
+    }
+
+    search.addEventListener("input", render);
+
+    /* =========================================================
+       ALTEZZA IFRAME
+
+       Comunica al sito contenitore l'altezza del contenuto.
+       Per iframe su un dominio diverso è necessario anche
+       il ricevitore JavaScript nel blocco WordPress.
+       ========================================================= */
+
+    let heightFrame = 0;
+    let lastHeight = 0;
+    let parentOrigin = null;
+
+    try {
+      const referrer = new URL(document.referrer);
+      if (["https:", "http:"].includes(referrer.protocol)) {
+        parentOrigin = referrer.origin;
+      }
+    } catch {
+      // Il sito contenitore potrà iniziare la comunicazione.
+    }
+
+    function sendHeight(force = false) {
+      if (window.parent === window || !parentOrigin) return;
+
+      // Misura il contenuto, non l'altezza del viewport dell'iframe:
+      // così l'iframe può anche accorciarsi dopo un filtro.
+      const height = Math.ceil(
+        root.getBoundingClientRect().height
+      ) + 2;
+
+      if (!force && height === lastHeight) return;
+      lastHeight = height;
+
+      window.parent.postMessage({
+        type: "ludica-risorse:height",
+        height
+      }, parentOrigin);
+    }
+
+    function scheduleHeight() {
+      cancelAnimationFrame(heightFrame);
+      heightFrame = requestAnimationFrame(() => sendHeight());
+    }
+
+    window.addEventListener("message", event => {
+      if (window.parent === window) return;
+      if (event.source !== window.parent) return;
+      if (!event.data || event.data.type !== "ludica-risorse:measure") return;
+      if (!/^https?:\/\//i.test(event.origin)) return;
+      if (parentOrigin && event.origin !== parentOrigin) return;
+
+      parentOrigin = event.origin;
+      sendHeight(true);
+    });
+
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(scheduleHeight).observe(root);
+    }
+
+    window.addEventListener("resize", scheduleHeight);
+    window.addEventListener("load", scheduleHeight);
+    root.addEventListener("load", scheduleHeight, true);
+
+    loadResources();
+  })();
+  </script>
+</body>
+</html>
