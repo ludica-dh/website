@@ -6,84 +6,175 @@
   <meta name="color-scheme" content="light">
   <title>Galleria risorse LUDiCa</title>
   <style>
-    /* PERSONALIZZAZIONE: dimensioni, colori e spaziature. */
+
+    /* =============================================================
+       1. PERSONALIZZAZIONE — modifica i valori in questa sezione.
+       Ogni tipologia di testo ha dimensione e colore indipendenti.
+       ============================================================= */
     .ludica-risorse {
-      --colore-primario: #7928ca;
-      --colore-hover: #5b21a2;
-      --colore-testo: #252333;
-      --colore-secondario: #625f70;
-      --colore-bordo: #e7e3ee;
-      --colore-tenue: #f7f3fc;
       --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --testo-titolo-pagina: clamp(26px, 4vw, 38px);
+
+      /* SFONDI: pagina, intestazione, pannello filtri, schede e messaggi. */
+      --sfondo-pagina: #faf9fc;
+      --sfondo-intestazione: transparent;
+      --sfondo-strumenti: #ffffff;
+      --sfondo-scheda: #ffffff;
+      --sfondo-messaggi: #f4effb;
+      --colore-bordo: #e7e2ee;
+      --colore-focus: #7928ca;
+
+      /* TESTI: dimensioni e colori per ogni tipologia. */
+      --testo-base: 16px;
+      --colore-base: #252333;
+      --testo-titolo-pagina: clamp(28px, 4vw, 40px);
+      --colore-titolo-pagina: #252333;
       --testo-introduzione: 16px;
-      --testo-etichetta: 14px;
+      --colore-introduzione: #6a6578;
+      --testo-etichetta: 13px;
+      --colore-etichetta: #514b61;
       --testo-ricerca: 16px;
+      --colore-ricerca: #252333;
+      --colore-segnaposto: #80798c;
       --testo-filtri: 14px;
+      --colore-filtri: #514b61;
+      --colore-filtri-hover: #6424a9;
+      --colore-filtri-attivi: #ffffff;
       --testo-conteggio: 14px;
+      --colore-conteggio: #746d81;
       --testo-titolo-scheda: 20px;
+      --colore-titolo-scheda: #7025bb;
       --testo-descrizione: 15px;
-      --testo-badge: 12px;
+      --colore-descrizione: #625b70;
+      --testo-badge: 11px;
+      --colore-badge: #6926a9;
       --testo-pulsante: 14px;
+      --colore-pulsante: #ffffff;
+      --colore-pulsante-hover: #ffffff;
+      --colore-link-assente: #746d81;
       --testo-messaggi: 16px;
-      --dimensione-icona: 72px;
-      --testo-icona: 32px;
-      --spazio-griglia: 22px;
-      --raggio-scheda: 18px;
+      --colore-messaggi: #514b61;
+      --testo-riprova: 14px;
+      --colore-riprova: #6424a9;
+
+      /* CATEGORIE: sfondi, bordi, angoli e spazi interni. */
+      --sfondo-filtri: #faf9fc;
+      --sfondo-filtri-hover: #f1e9fc;
+      --sfondo-filtri-attivi: #7928ca;
+      --bordo-filtri: #e8e3ee;
+      --bordo-filtri-hover: #d5bbed;
+      --bordo-filtri-attivi: #7928ca;
+      --raggio-filtri: 12px;
+      --padding-filtri: 11px 18px;
+
+      /* RICERCA E PULSANTI DELLE SCHEDE. */
+      --sfondo-ricerca: #faf9fc;
+      --sfondo-pulsante: #7928ca;
+      --sfondo-pulsante-hover: #5b21a2;
+      --sfondo-badge: #f3ecfc;
+      --sfondo-riprova: #ffffff;
+      --sfondo-riprova-hover: #f1e9fc;
+
+      /* ANTEPRIMA: occupa tutta la larghezza interna della scheda.
+         Altezza precedente: 72px. Nuova altezza: 210px.
+         contain = immagine intera, ideale per loghi.
+         cover = riempie il riquadro, può ritagliare l'immagine.
+         --larghezza-anteprima può essere 100% oppure un valore in px.
+         Per allinearla a sinistra: --allineamento-anteprima: flex-start. */
+      --larghezza-anteprima: 100%;
+      --altezza-anteprima: 210px;
+      --sfondo-anteprima: #f6f3fa;
+      --raggio-anteprima: 12px;
+      --bordo-anteprima: #eee7f5;
+      --padding-immagine: 18px;
+      --adattamento-immagine: contain;
+      --posizione-immagine: center;
+      --allineamento-anteprima: center;
+      --testo-icona-riserva: 60px;
+      --colore-icona-riserva: #7928ca;
+
+      /* LAYOUT: larghezza, spazi, angoli e ombre. */
       --larghezza-massima: 1440px;
+      --spazio-griglia: 24px;
+      --padding-pagina: clamp(16px, 3vw, 40px);
+      --padding-strumenti: clamp(16px, 2vw, 24px);
+      --padding-scheda: 22px;
+      --raggio-scheda: 18px;
+      --ombra-scheda: 0 4px 20px rgb(35 20 60 / 4%);
+      --ombra-scheda-hover: 0 14px 32px rgb(35 20 60 / 9%);
+      --ombra-filtri: 0 2px 4px rgb(35 20 60 / 3%);
+      --ombra-filtri-hover: 0 4px 10px rgb(35 20 60 / 7%);
+      --ombra-filtri-attivi: 0 4px 12px rgb(121 40 202 / 17%);
+
       width: 100%; min-width: 0; margin: 0; padding: 0;
-      color: var(--colore-testo); background: #fff;
-      font: 400 16px/1.6 var(--font); text-align: left;
+      color: var(--colore-base); background: var(--sfondo-pagina);
+      font: 400 var(--testo-base)/1.6 var(--font); text-align: left;
       color-scheme: light; -webkit-text-size-adjust: 100%;
     }
     .ludica-risorse, .ludica-risorse *,
     .ludica-risorse *::before, .ludica-risorse *::after { box-sizing: border-box; }
     .ludica-risorse .lr-contenuto {
       display: flow-root; width: 100%; max-width: var(--larghezza-massima);
-      margin-inline: auto; padding: clamp(16px, 3vw, 40px);
+      margin-inline: auto; padding: var(--padding-pagina);
     }
-    .ludica-risorse .lr-intestazione { margin-bottom: 24px; }
+    .ludica-risorse .lr-intestazione {
+      margin-bottom: 28px; background: var(--sfondo-intestazione);
+    }
     .ludica-risorse .lr-titolo-pagina {
-      margin: 0 0 8px; color: var(--colore-testo);
-      font: 750 var(--testo-titolo-pagina)/1.2 var(--font); letter-spacing: -.025em;
+      margin: 0 0 10px; color: var(--colore-titolo-pagina);
+      font: 750 var(--testo-titolo-pagina)/1.2 var(--font); letter-spacing: -.03em;
     }
     .ludica-risorse .lr-introduzione {
-      margin: 0; color: var(--colore-secondario); font-size: var(--testo-introduzione);
+      margin: 0; color: var(--colore-introduzione); font-size: var(--testo-introduzione);
     }
-    .ludica-risorse .lr-strumenti { margin-bottom: 26px; }
-    .ludica-risorse .lr-label {
-      display: block; margin-bottom: 7px; font-size: var(--testo-etichetta); font-weight: 650;
+    /* 2. PANNELLO STRUMENTI: categorie prima, ricerca subito sotto. */
+    .ludica-risorse .lr-strumenti {
+      margin-bottom: 28px; padding: var(--padding-strumenti);
+      background: var(--sfondo-strumenti); border: 1px solid var(--colore-bordo); border-radius: 18px;
     }
-    .ludica-risorse .lr-ricerca {
-      display: block; width: 100%; min-width: 0; min-height: 48px; margin: 0;
-      padding: 12px 15px; border: 1px solid var(--colore-bordo); border-radius: 12px;
-      background: #fff; color: var(--colore-testo);
-      font: 400 var(--testo-ricerca)/1.4 var(--font); box-shadow: none; appearance: none;
+    .ludica-risorse .lr-filtri {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 22px;
     }
-    .ludica-risorse .lr-ricerca::placeholder { color: #787382; opacity: 1; }
-    .ludica-risorse .lr-filtri { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 12px; }
-    .ludica-risorse .lr-filtro, .ludica-risorse .lr-riprova {
-      display: inline-flex; justify-content: center; align-items: center;
-      min-height: 44px; max-width: 100%; margin: 0; padding: 9px 16px;
-      border: 1px solid var(--colore-bordo); border-radius: 999px;
-      background: #fff; color: var(--colore-testo);
-      font: 600 var(--testo-filtri)/1.3 var(--font); text-decoration: none;
-      text-transform: none; letter-spacing: normal; cursor: pointer;
-      overflow-wrap: anywhere; box-shadow: none; transition: background .18s ease;
-    }
-    .ludica-risorse .lr-filtro:hover, .ludica-risorse .lr-riprova:hover {
-      border-color: var(--colore-primario); background: var(--colore-tenue);
+    .ludica-risorse .lr-filtro {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; max-width: 100%; margin: 0; padding: var(--padding-filtri);
+      border: 1px solid var(--bordo-filtri); border-radius: var(--raggio-filtri);
+      background: var(--sfondo-filtri); color: var(--colore-filtri);
+      font: 600 var(--testo-filtri)/1.35 var(--font);
+      text-transform: none; letter-spacing: normal; cursor: pointer; overflow-wrap: anywhere;
+      box-shadow: var(--ombra-filtri);
+      transition: background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
     }
     .ludica-risorse .lr-filtro[aria-pressed="true"] {
-      background: var(--colore-primario); border-color: var(--colore-primario); color: #fff;
+      color: var(--colore-filtri-attivi); background: var(--sfondo-filtri-attivi);
+      border-color: var(--bordo-filtri-attivi); box-shadow: var(--ombra-filtri-attivi);
     }
+    .ludica-risorse .lr-filtro:active { transform: translateY(1px); }
+    @media (hover: hover) {
+      .ludica-risorse .lr-filtro:not([aria-pressed="true"]):hover {
+        background: var(--sfondo-filtri-hover); color: var(--colore-filtri-hover);
+        border-color: var(--bordo-filtri-hover); box-shadow: var(--ombra-filtri-hover);
+        transform: translateY(-1px);
+      }
+    }
+    .ludica-risorse .lr-label {
+      display: block; margin: 0 0 8px; color: var(--colore-etichetta);
+      font-size: var(--testo-etichetta); font-weight: 650;
+    }
+    .ludica-risorse .lr-ricerca {
+      display: block; width: 100%; min-width: 0; min-height: 50px; margin: 0;
+      padding: 13px 16px; border: 1px solid var(--colore-bordo); border-radius: 12px;
+      background: var(--sfondo-ricerca); color: var(--colore-ricerca);
+      font: 400 var(--testo-ricerca)/1.4 var(--font); box-shadow: none; appearance: none;
+      transition: border-color .18s ease;
+    }
+    .ludica-risorse .lr-ricerca::placeholder { color: var(--colore-segnaposto); opacity: 1; }
     .ludica-risorse .lr-conteggio {
-      margin: 0; color: var(--colore-secondario); font-size: var(--testo-conteggio);
+      margin: 12px 0 0; color: var(--colore-conteggio); font-size: var(--testo-conteggio);
     }
-    /* Mobile: 1 colonna. Tablet: 2. Desktop: 3 o 4. */
+    /* 3. COLONNE RESPONSIVE: 1 mobile, 2 tablet, 3 o 4 desktop. */
     .ludica-risorse .lr-griglia {
-      display: grid; grid-template-columns: minmax(0, 1fr);
-      gap: var(--spazio-griglia); margin: 0; padding: 0; list-style: none;
+      display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spazio-griglia);
+      margin: 0; padding: 0; list-style: none;
     }
     @media (min-width: 600px) {
       .ludica-risorse .lr-griglia { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -97,63 +188,75 @@
     .ludica-risorse .lr-elemento { display: flex; min-width: 0; margin: 0; padding: 0; list-style: none; }
     .ludica-risorse .lr-scheda {
       display: flex; flex-direction: column; align-items: flex-start;
-      width: 100%; min-width: 0; padding: 24px; border: 1px solid var(--colore-bordo);
-      border-radius: var(--raggio-scheda); background: #fff; overflow-wrap: anywhere;
-      box-shadow: 0 4px 18px rgb(35 20 60 / 5%);
-      transition: transform .2s ease, box-shadow .2s ease;
+      width: 100%; min-width: 0; padding: var(--padding-scheda);
+      border: 1px solid var(--colore-bordo); border-radius: var(--raggio-scheda);
+      background: var(--sfondo-scheda); overflow-wrap: anywhere;
+      box-shadow: var(--ombra-scheda); transition: transform .2s ease, box-shadow .2s ease;
     }
     @media (hover: hover) {
-      .ludica-risorse .lr-scheda:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgb(35 20 60 / 10%); }
+      .ludica-risorse .lr-scheda:hover { transform: translateY(-3px); box-shadow: var(--ombra-scheda-hover); }
     }
+    /* 4. REGOLA DEDICATA ALL'ANTEPRIMA.
+       Modifica le variabili ANTEPRIMA nella sezione iniziale. */
     .ludica-risorse .lr-icona {
       display: flex; justify-content: center; align-items: center; flex-shrink: 0;
-      width: var(--dimensione-icona); height: var(--dimensione-icona); max-width: 100%;
-      margin-bottom: 20px; border-radius: 14px; overflow: hidden;
-      background: var(--colore-tenue); color: var(--colore-primario);
-      font-size: var(--testo-icona); line-height: 1;
+      align-self: var(--allineamento-anteprima);
+      width: var(--larghezza-anteprima); max-width: 100%; height: var(--altezza-anteprima);
+      margin: 0 0 22px; overflow: hidden; border: 1px solid var(--bordo-anteprima);
+      border-radius: var(--raggio-anteprima); background: var(--sfondo-anteprima);
+      color: var(--colore-icona-riserva); font-size: var(--testo-icona-riserva); line-height: 1;
     }
     .ludica-risorse .lr-icona img {
-      display: block; width: 100%; height: 100%; padding: 7px; object-fit: contain;
-      border: 0; border-radius: 0; box-shadow: none;
+      display: block; width: 100%; height: 100%; min-width: 0;
+      padding: var(--padding-immagine); object-fit: var(--adattamento-immagine);
+      object-position: var(--posizione-immagine); border: 0; border-radius: 0; box-shadow: none;
     }
     .ludica-risorse .lr-badge {
-      display: inline-block; max-width: 100%; margin-bottom: 12px; padding: 4px 10px;
-      border-radius: 8px; background: var(--colore-tenue); color: var(--colore-hover);
-      font-size: var(--testo-badge); font-weight: 650;
+      display: inline-block; max-width: 100%; margin: 0 0 12px; padding: 4px 10px;
+      border-radius: 7px; background: var(--sfondo-badge); color: var(--colore-badge);
+      font-size: var(--testo-badge); font-weight: 650; letter-spacing: .035em;
     }
     .ludica-risorse .lr-titolo {
-      margin: 0 0 10px; color: var(--colore-primario);
-      font: 700 var(--testo-titolo-scheda)/1.3 var(--font); text-transform: none; letter-spacing: normal;
+      margin: 0 0 10px; color: var(--colore-titolo-scheda);
+      font: 700 var(--testo-titolo-scheda)/1.35 var(--font); text-transform: none; letter-spacing: -.015em;
     }
     .ludica-risorse .lr-descrizione {
-      margin: 0 0 24px; color: var(--colore-secondario);
+      margin: 0 0 24px; color: var(--colore-descrizione);
       font: 400 var(--testo-descrizione)/1.65 var(--font); white-space: pre-line;
     }
     .ludica-risorse .lr-link {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      min-height: 44px; max-width: 100%; margin-top: auto; padding: 10px 14px;
-      border: 1px solid var(--colore-primario); border-radius: 10px;
-      background: var(--colore-primario); color: #fff;
+      min-height: 44px; max-width: 100%; margin-top: auto; padding: 10px 15px;
+      border: 1px solid var(--sfondo-pulsante); border-radius: 10px;
+      background: var(--sfondo-pulsante); color: var(--colore-pulsante);
       font: 650 var(--testo-pulsante)/1.4 var(--font); text-decoration: none;
-      box-shadow: none; transition: background .18s ease;
+      box-shadow: none; transition: background .18s ease, color .18s ease;
     }
     .ludica-risorse .lr-link:hover {
-      background: var(--colore-hover); border-color: var(--colore-hover); color: #fff; text-decoration: none;
+      background: var(--sfondo-pulsante-hover); border-color: var(--sfondo-pulsante-hover);
+      color: var(--colore-pulsante-hover); text-decoration: none;
     }
     .ludica-risorse .lr-link-assente {
-      margin-top: auto; color: var(--colore-secondario); font-size: var(--testo-pulsante);
+      margin-top: auto; color: var(--colore-link-assente); font-size: var(--testo-pulsante);
     }
     .ludica-risorse .lr-messaggio {
-      margin: 18px 0; padding: 22px; border: 1px solid var(--colore-bordo);
-      border-radius: 14px; background: var(--colore-tenue);
+      margin: 18px 0; padding: 22px; border: 1px solid var(--colore-bordo); border-radius: 14px;
+      background: var(--sfondo-messaggi); color: var(--colore-messaggi);
       font-size: var(--testo-messaggi); overflow-wrap: anywhere;
     }
     .ludica-risorse .lr-messaggio p { margin: 0 0 12px; }
     .ludica-risorse .lr-messaggio p:last-child { margin-bottom: 0; }
     .ludica-risorse .lr-azioni { display: flex; flex-wrap: wrap; gap: 8px; }
-    .ludica-risorse :is(input, button, a):focus-visible {
-      outline: 3px solid var(--colore-primario); outline-offset: 4px;
+    .ludica-risorse .lr-riprova {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; max-width: 100%; margin: 0; padding: 10px 16px;
+      border: 1px solid var(--colore-bordo); border-radius: 10px;
+      background: var(--sfondo-riprova); color: var(--colore-riprova);
+      font: 600 var(--testo-riprova)/1.4 var(--font); text-decoration: none;
+      text-transform: none; letter-spacing: normal; cursor: pointer; overflow-wrap: anywhere;
     }
+    .ludica-risorse .lr-riprova:hover { background: var(--sfondo-riprova-hover); }
+    .ludica-risorse :is(input, button, a):focus-visible { outline: 3px solid var(--colore-focus); outline-offset: 4px; }
     .ludica-risorse [hidden] { display: none !important; }
     @media (prefers-reduced-motion: reduce) {
       .ludica-risorse *, .ludica-risorse *::before, .ludica-risorse *::after {
@@ -169,10 +272,11 @@
       <p class="lr-introduzione">Cerca una risorsa o seleziona una tipologia.</p>
     </header>
     <section class="lr-strumenti" aria-label="Ricerca e filtri" hidden>
+      <!-- Ordine reale nel documento: categorie, poi ricerca. -->
+      <div class="lr-filtri" role="group" aria-label="Filtra per tipologia"></div>
       <label class="lr-label" for="lr-ricerca">Cerca nelle risorse</label>
       <input id="lr-ricerca" class="lr-ricerca" type="search"
         placeholder="Scrivi un titolo o una parola chiave…" autocomplete="off" enterkeyhint="search">
-      <div class="lr-filtri" role="group" aria-label="Filtra per tipologia"></div>
       <p class="lr-conteggio" role="status" aria-live="polite" aria-atomic="true"></p>
     </section>
     <div class="lr-messaggio" role="status" aria-live="polite" hidden></div>
