@@ -1839,5 +1839,20 @@ try{validate(MAP_DATA);Object.assign(S,buildGraph(MAP_DATA));drawNetwork();fit()
 })();
 </script>
 
+<!-- Script per inviare l'altezza esatta della pagina alla pagina contenitore (WordPress) -->
+<script>
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    window.parent.postMessage({ frameHeight: height }, '*');
+  }
 
+  // Invia l'altezza al caricamento e ad ogni ridimensionamento della finestra
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+
+  // Monitora eventuali cambi di dimensione dinamici del contenuto
+  if (window.ResizeObserver) {
+    new ResizeObserver(sendHeight).observe(document.body);
+  }
+</script>
 </body></html>
