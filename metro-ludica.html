@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="it"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="LUDiCa: una rete integrata di azioni, strumenti e attori, rappresentata come una cartina della metropolitana.">
+<title>LUDiCa · Rete delle azioni</title>
+<style>
+/* PERSONALIZZAZIONE VISIVA: colori delle singole linee in MAP_DATA.lines. */
+:root{color-scheme:light;--paper:#f4f4ee;--surface:#fff;--ink:#19343c;--muted:#5b6d73;--border:#d8e1de;--radius:20px;--font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--map-label:18px;--tool-label:16px}
+*{box-sizing:border-box}body{margin:0;font:15px/1.6 var(--font);background:var(--paper);color:var(--ink)}button,input,select{font:inherit}button{cursor:pointer;color:inherit}button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid #175dcc;outline-offset:4px}a{color:inherit;text-underline-offset:3px}[hidden]{display:none!important}.shell{width:min(1460px,calc(100% - 48px));margin:auto}.masthead{padding:21px 0;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--border)}.brand{font-size:25px;letter-spacing:-1.3px;font-weight:900}.brand span{color:#25815f}.institution{font-size:11px;letter-spacing:.06em;text-align:right;color:var(--muted)}.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:50px;padding:36px 0 27px;align-items:end}.kicker{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin:0 0 10px}h1{font-size:clamp(30px,4.2vw,55px);line-height:1.08;letter-spacing:-.05em;margin:0}h1 span{color:#25815f}.intro{font-size:14px;color:var(--muted);max-width:580px;margin:0}.map-card{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);overflow:hidden;box-shadow:0 12px 40px #18313c08}.toolbar{padding:17px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:16px}.toolbar h2{font-size:15px;margin:0}.toolbar p{font-size:11px;color:var(--muted);margin:0}.count{font:11px ui-monospace,monospace;color:var(--muted)}.legend{display:flex;gap:7px;flex-wrap:wrap;padding:17px 22px 9px}.line-button{border:1px solid var(--border);border-radius:30px;background:white;padding:7px 11px;font-size:11px;display:flex;align-items:center;gap:7px}.line-button[aria-pressed=true]{background:#edf2ef;border-color:var(--ink);font-weight:750}.swatch{height:4px;width:19px;border-radius:5px;background:var(--line-color,var(--ink))}.map-stage{position:relative;background:#fff}.map-stage svg{display:block;width:100%;aspect-ratio:var(--map-aspect,1440/980);max-height:900px;min-height:430px;touch-action:none;user-select:none;cursor:grab}.map-stage svg.is-dragging{cursor:grabbing}.map-stage svg:focus-visible{outline:3px solid #175dcc;outline-offset:-4px}.map-controls{position:absolute;left:18px;bottom:16px;display:flex;gap:4px;padding:4px;border:1px solid var(--border);border-radius:12px;background:#fffffff0;box-shadow:0 5px 15px #15333c0c}.map-controls button{background:white;border:0;border-radius:7px;width:37px;height:35px;font-size:20px}.map-controls button:last-child{width:auto;font-size:11px;padding:0 11px}.map-controls button:hover{background:#edf2ef}.map-controls button:disabled{opacity:.3;cursor:default}.map-help{position:absolute;right:20px;bottom:20px;margin:0;color:var(--muted);font-size:10px;pointer-events:none}.district{font-family:var(--font);font-size:11px;letter-spacing:3px;font-weight:800;fill:#97aaa4}.edge-group{pointer-events:none;transition:opacity .2s}.edge-halo{stroke:#fff;stroke-width:12;fill:none;stroke-linejoin:round;stroke-linecap:round}.edge-track{stroke-width:7;fill:none;stroke-linejoin:round;stroke-linecap:round}.station{cursor:pointer;outline:none;transition:opacity .2s}.station .node{fill:white;stroke:var(--node-color,#19343c);stroke-width:3}.station .interchange{fill:white;stroke:#19343c;stroke-width:2}.station .center{fill:#19343c}.station .focus-ring{fill:none;stroke:#19343c;stroke-width:2;opacity:0}.station:hover .focus-ring,.station:focus-visible .focus-ring,.station.is-selected .focus-ring{opacity:1}.station.is-selected .focus-ring{stroke:#175dcc;stroke-width:3}.station.is-selected .center{fill:#175dcc}.station-label{font-family:var(--font);font-size:var(--map-label);font-weight:650;fill:#19343c;paint-order:stroke;stroke:#fff;stroke-width:6;stroke-linejoin:round}.is-major .station-label{font-size:24px;font-weight:850}.resource .station-label{font-size:var(--tool-label);font-weight:500;fill:#52656c}.is-dimmed{opacity:.12}.map-footer{padding:14px 22px;border-top:1px solid var(--border);background:#f7f9f6;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}.symbol-key{display:flex;gap:16px;font-size:11px;color:var(--muted)}.symbol-key span{display:flex;align-items:center;gap:7px}.symbol{display:inline-block;width:11px;height:11px;border:2px solid var(--ink);border-radius:50%;background:white}.symbol.hub{box-shadow:0 0 0 2px white,0 0 0 3px var(--ink)}.map-footer label{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}select{border:1px solid var(--border);background:white;color:var(--ink);border-radius:7px;padding:7px;max-width:230px;font-size:12px}.reading{margin:12px 0 0;color:var(--muted);font-size:12px}.detail{margin:20px 0;background:#19343c;color:white;border-radius:var(--radius);padding:25px;scroll-margin-top:15px}.detail-grid{display:grid;grid-template-columns:.9fr 1.2fr 1fr;gap:27px}.detail h2{font-size:25px;letter-spacing:-.03em;line-height:1.2;margin:0 25px 12px 0}.detail p{font-size:13px;color:#d9e5e4;margin:0}.detail-kicker{font:10px ui-monospace,monospace!important;letter-spacing:.08em;margin-bottom:10px!important;color:#afc7c2!important}.detail-heading{position:relative}.close{position:absolute;right:0;top:-5px;color:white;background:none;border:1px solid #ffffff45;border-radius:50%;font-size:21px;width:29px;height:29px;line-height:1}.detail h3{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#afc7c2;margin:0 0 9px}.branch+.branch{margin-top:16px}.branch ul{padding-left:17px;margin:0;font-size:12px;color:#d9e5e4}.connections{display:flex;flex-wrap:wrap;gap:6px}.connection{border:1px solid #ffffff35;border-radius:8px;background:#ffffff09;color:white;font-size:11px;padding:6px 9px;text-align:left}.connection:hover{background:#ffffff20}.badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px}.badge{border-left:4px solid var(--line-color);border-radius:4px;padding:4px 7px;background:#ffffff0b;color:#e2eeeb;font-size:10px}.detail-link{display:block;margin-top:12px;color:#e1ed9b;font-size:12px}.detail-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px;padding-top:15px;border-top:1px solid #ffffff25}.small-button{background:transparent;border:1px solid #ffffff45;border-radius:7px;color:white;font-size:11px;padding:7px 10px}.status{font-size:11px;color:#b9cfca}.guide{margin:26px 0 20px;border-top:1px solid var(--border);padding-top:16px;font-size:12px;color:var(--muted)}.guide summary{cursor:pointer;font-weight:700;color:var(--ink)}.guide li{margin-top:7px}code{background:#e3eae5;color:#254f43;padding:1px 4px;border-radius:3px}footer{font-size:10px;color:var(--muted);padding-bottom:25px}.error{padding:20px;color:#a53125}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}@media(max-width:800px){.shell{width:calc(100% - 24px)}.hero{grid-template-columns:1fr;gap:18px;padding:27px 0 22px}.intro{max-width:none}.institution{font-size:9px}.toolbar,.legend,.map-footer{padding-left:15px;padding-right:15px}.count{display:none}.map-stage svg{height:64vh;min-height:460px;max-height:720px;aspect-ratio:auto}.map-help{display:none}.detail-grid{grid-template-columns:1fr;gap:23px}.detail{padding:22px}.map-footer label{width:100%;justify-content:space-between}.map-footer select{max-width:66%}.reading{font-size:11px}.detail-actions{flex-wrap:wrap}.line-button{font-size:10px;padding:7px 9px}}@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}@media print{.shell{width:100%}.map-controls,.legend,.guide,.map-footer label,.detail-actions{display:none}.map-stage svg{max-height:none;height:auto;aspect-ratio:var(--map-aspect,1440/980)}.hero{padding:20px 0}.detail{break-inside:avoid}body{background:white}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="masthead"><div class="brand">LU<span>Di</span>Ca<span>.</span></div><div class="institution">LABORATORIO DI UMANISTICA DIGITALE<br>UNIVERSITÀ DEGLI STUDI DI CAGLIARI</div></header>
+<main>
+<section class="hero"><div><p class="kicker">Flusso di lavoro / laboratorio LUDiCa</p><h1 style="color: rgb(0, 139, 0) !important;">Socializzare un metodo.
+
+Nelle connessioni.</h1></div><p class="intro">Fonti, persone e strumenti si incontrano in una rete di azioni metodologiche, metodiche e computazionali. Ogni snodo apre più possibilità: esplora le connessioni che rendono condiviso il metodo storico.</p></section>
+<section class="map-card" aria-labelledby="map-title">
+<div class="toolbar"><div><h2 id="map-title">La metropolitana del laboratorio</h2><p>Seleziona Fonti documentarie per seguirne il percorso fino alla restituzione.</p></div><span class="count" id="count"></span></div>
+<nav class="legend" id="legend" aria-label="Linee di azione"></nav>
+<div class="map-stage" id="stage"><svg id="map" viewBox="0 0 1440 980" tabindex="0" role="group" aria-labelledby="svg-title svg-description"><title id="svg-title">Rete integrata delle azioni del laboratorio</title><desc id="svg-description">Linee interconnesse, circuiti e diramazioni. I cerchi doppi sono snodi condivisi. Attiva una stazione per leggere i dettagli; usa i pulsanti per ingrandire e trascina per spostare la mappa.</desc></svg>
+<div class="map-controls" aria-label="Controlli mappa"><button id="zoom-out" type="button" aria-label="Riduci la mappa">−</button><button id="zoom-in" type="button" aria-label="Ingrandisci la mappa">+</button><button id="fit" type="button">Vista completa</button></div><p class="map-help">Trascina per esplorare · + / − per ingrandire · Esc per azzerare la selezione</p></div>
+<div class="map-footer"><div class="symbol-key"><span><i class="symbol" aria-hidden="true"></i>Azione / risorsa</span><span><i class="symbol hub" aria-hidden="true"></i>Snodo condiviso</span></div><label for="station-select">Vai a uno snodo<select id="station-select"><option value="">Scegli un’azione o uno strumento</option></select></label></div>
+</section>
+<p class="reading">Ogni cerchio identifica una connessione effettiva. Un semplice incrocio di tracciati, senza cerchio, non indica uno scambio. Restituzione pubblica è lo snodo maggiore da cui derivano Quaderni, Storie digitali e Serata di restituzione comunitaria. Le linee descrivono relazioni ricorrenti e bidirezionali; i circuiti collegano ricerca, pratica e restituzione. Su mobile usa + e trascina per esplorare i dettagli.</p>
+<section class="detail" id="detail" aria-labelledby="detail-title" hidden=""><div class="detail-grid"><div class="detail-heading"><button type="button" id="close" class="close" aria-label="Chiudi dettagli e torna allo snodo">×</button><p class="detail-kicker" id="detail-kicker"></p><h2 id="detail-title"></h2><p id="description"></p><a id="project-link" class="detail-link" hidden=""></a></div><div id="branches"></div><div><h3>Linee che si incontrano qui</h3><div class="badges" id="badges"></div><h3>Azioni e risorse collegate</h3><div class="connections" id="connections"></div></div></div><div class="detail-actions"><span class="status" id="status" role="status" aria-live="polite"></span><div><button id="show-node" class="small-button" type="button">Localizza nella rete</button> <button id="copy" class="small-button" type="button">Copia link allo snodo</button></div></div></section>
+<p class="sr-only" id="announcement" role="status" aria-live="polite"></p>
+<details class="guide"><summary>Come modificare azioni, connessioni e linee</summary><ol><li>Cerca <code>const MAP_DATA</code> nel file: <code>nodes</code> contiene stazioni, testi, strumenti e posizioni <code>x</code>/<code>y</code>.</li><li>Ogni linea in <code>lines</code> contiene uno o più <code>routes</code>. Un percorso è una lista di ID di stazioni e di punti di svolta <code>[x, y]</code>. La stessa stazione in più linee diventa automaticamente uno snodo condiviso.</li><li>Per chiudere un circuito, ripeti il primo ID in fondo al percorso. Per una diramazione, aggiungi un altro percorso nella stessa linea, partendo da una stazione esistente.</li><li>Il riordino dell'array <code>nodes</code> non cambia i collegamenti: la rete è definita esclusivamente dai percorsi. Cambia <code>labelDx</code>, <code>labelDy</code> e <code>labelAnchor</code> per posizionare le etichette.</li><li>Le coordinate sono quelle di una cartina schematica a tratti orizzontali, verticali e diagonali a 45°. Dopo aver spostato uno snodo, adatta eventuali punti di svolta vicini. Sfondi, font e dimensioni dei testi si modificano nelle variabili CSS iniziali.</li></ol></details>
+</main>
+<footer>Mappa schematica delle azioni integrate del laboratorio. Fonti, comunità e strumenti si connettono in più circuiti: la geometria non impone un ordine cronologico obbligato.</footer>
+<noscript><p class="error">Attiva JavaScript per visualizzare e navigare la rete.</p></noscript>
+</div>
+<script>
+'use strict';
+/* DATI MODIFICABILI. Un ID condiviso rappresenta uno scambio effettivo.
+   routes: gli ID identificano snodi; [x,y] serve solo a piegare una linea.
+   Per collegare un progetto aggiungi url e linkLabel a un nodo.
+   x/y sono coordinate della cartina, non una sequenza di fasi. */
+const MAP_DATA = {
+  "width": 2400,
+  "height": 1920,
+  "districts": [
+    {
+      "x": 60,
+      "y": 20,
+      "w": 2300,
+      "h": 840,
+      "title": "FONTI · METODI · INTERPRETAZIONE · CARTOGRAFIE",
+      "tx": 70,
+      "ty": 33
+    },
+    {
+      "x": 60,
+      "y": 550,
+      "w": 1340,
+      "h": 980,
+      "title": "COMUNITÀ · FONTI · DESCRIZIONI CONDIVISE",
+      "tx": 70,
+      "ty": 573
+    }
+  ],
+  "nodes": [
+    {
+      "id": "tema",
+      "title": "Domande di ricerca",
+      "description": "Definire domande storiche e obiettivi che si rinnovano nel confronto con le fonti e con la comunità.",
+      "branches": [
+        {
+          "title": "Azioni metodologiche",
+          "items": [
+            "Definire la domanda di ricerca",
+            "Delimitare il contesto e gli obiettivi"
+          ]
+        },
+        {
+          "title": "Attori e risultato",
+          "items": [
+            "Docenti e studenti",
+            "Un problema storico da esplorare insieme"
+          ]
+        }
+      ],
+      "x": 180,
+      "y": 180,
+      "label": [
+        "Domande di ricerca"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "bibliografia",
+      "title": "Bibliografie",
+      "description": "Raccogliere e organizzare riferimenti bibliografici, collegando la ricerca alle biblioteche e alle risorse del territorio.",
+      "branches": [
+        {
+          "title": "Gestione bibliografica",
+          "items": [
+            "Raccolta e descrizione dei riferimenti",
+            "Organizzazione e condivisione con Zotero"
+          ]
+        }
+      ],
+      "x": 500,
+      "y": 180,
+      "label": [
+        "Bibliografie"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "documenti",
+      "title": "Fonti documentarie",
+      "description": "Le fonti documentarie alimentano due percorsi distinti: descrizione e pubblicazione con Omeka S, oppure analisi di mappe e cartografie storiche. Selezionando questo snodo si evidenzia il percorso documentario fino alla restituzione pubblica e a Storie digitali.",
+      "branches": [
+        {
+          "title": "Documento singolo",
+          "items": [
+            "Descrizione diretta in Omeka S"
+          ]
+        },
+        {
+          "title": "Decine o centinaia di documenti",
+          "items": [
+            "Metadatazione in un foglio di calcolo",
+            "Importazione dei dati strutturati in Omeka S"
+          ]
+        },
+        {
+          "title": "Restituzione e interpretazione",
+          "items": [
+            "Omeka S → Restituzione pubblica → Storie digitali",
+            "Problematizzazione con il supporto dei formatori",
+            "Percorso distinto per mappe e cartografie storiche"
+          ]
+        }
+      ],
+      "x": 850,
+      "y": 180,
+      "label": [
+        "Fonti documentarie"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action",
+      "focusLine": "documentaire"
+    },
+    {
+      "id": "trascrizione",
+      "title": "Trascrizione delle fonti",
+      "description": "Leggere, trascrivere e verificare i testi delle fonti con il supporto di Tropy, Transkribus e AI locale.",
+      "branches": [
+        {
+          "title": "Strumenti collegati",
+          "items": [
+            "Tropy",
+            "Transkribus",
+            "AI locale",
+            "LibreOffice"
+          ]
+        },
+        {
+          "title": "Controllo critico",
+          "items": [
+            "Verificare le trascrizioni rispetto alle fonti",
+            "Documentare scelte e incertezze"
+          ]
+        }
+      ],
+      "x": 1200,
+      "y": 180,
+      "label": [
+        "Trascrizione",
+        "delle fonti"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "classificazione",
+      "title": "Classificazione",
+      "description": "Descrivere e organizzare le fonti per renderle reperibili e metterle in relazione attraverso metadati condivisi.",
+      "branches": [
+        {
+          "title": "Operazioni",
+          "items": [
+            "Definire attributi e relazioni",
+            "Organizzare le fonti in connessione con Omeka S"
+          ]
+        }
+      ],
+      "x": 1500,
+      "y": 760,
+      "label": [
+        "Classificazione"
+      ],
+      "labelDx": 0,
+      "labelDy": -30,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "cartografia",
+      "title": "Cartografia digitale",
+      "description": "La cartografia digitale deriva dal lavoro in QGIS sulle mappe storiche e sui big data cartografici. Il percorso prosegue verso GeoNode.",
+      "branches": [
+        {
+          "title": "Percorso geografico",
+          "items": [
+            "Mappe storiche e big data → QGIS",
+            "QGIS → Cartografia digitale → GeoNode"
+          ]
+        }
+      ],
+      "x": 2050,
+      "y": 1100,
+      "label": [
+        "Cartografia",
+        "digitale"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "campo-base",
+      "title": "Città / paese / quartiere",
+      "description": "Il laboratorio opera in una città, un paese o un quartiere, con una base operativa che sostiene il lavoro insieme alla comunità.",
+      "branches": [
+        {
+          "title": "Contesto di lavoro",
+          "items": [
+            "Città / paese / quartiere",
+            "Base operativa",
+            "Relazione quotidiana con la comunità"
+          ]
+        }
+      ],
+      "x": 100,
+      "y": 1000,
+      "label": [
+        "Città / paese",
+        "/ quartiere",
+        "Base operativa"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "comunita",
+      "title": "Comunità",
+      "description": "La comunità co-costruisce la ricerca condividendo testimonianze, patrimoni documentari, materiali e conoscenze del territorio.",
+      "branches": [
+        {
+          "title": "Fonti e pratiche condivise",
+          "items": [
+            "Interviste e fotografie storiche",
+            "Archivi locali pubblici e privati",
+            "Biblioteche locali",
+            "Geoesplorazione del territorio",
+            "Opere d’arte, architettura e spazi urbani"
+          ]
+        },
+        {
+          "title": "Integrazione nella ricerca",
+          "items": [
+            "Descrizione e collegamento delle fonti in Omeka S",
+            "Organizzazione delle bibliografie con Zotero"
+          ]
+        }
+      ],
+      "x": 300,
+      "y": 1000,
+      "label": [
+        "Comunità"
+      ],
+      "labelDx": 0,
+      "labelDy": -30,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "dematerializzazione",
+      "title": "Dematerializzazione",
+      "description": "Passaggio di supporto da analogico a digitale per le fonti provenienti sia dagli archivi pubblici sia dagli archivi privati. Entrambi sono collegati direttamente a questo snodo, che porta allo scanner.",
+      "branches": [
+        {
+          "title": "Provenienza delle fonti",
+          "items": [
+            "Archivi pubblici",
+            "Archivi privati"
+          ]
+        },
+        {
+          "title": "Acquisizione",
+          "items": [
+            "Scanner LUDiCa",
+            "Conservazione del riferimento alla fonte e al suo contesto"
+          ]
+        }
+      ],
+      "x": 650,
+      "y": 380,
+      "label": [
+        "Dematerializzazione",
+        "delle fonti"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "metadatazione",
+      "title": "Metadatazione delle fonti",
+      "description": "Definire e verificare i metadati delle fonti. Un documento può essere descritto direttamente in Omeka S; per decine o centinaia di documenti si organizza il lavoro in un foglio di calcolo da importare in Omeka S. La descrizione alimenta anche la problematizzazione.",
+      "branches": [
+        {
+          "title": "Due modalità di lavoro",
+          "items": [
+            "Descrizione diretta in Omeka S per un singolo documento",
+            "Foglio di calcolo per la metadatazione di numerosi documenti",
+            "Importazione del foglio in Omeka S"
+          ]
+        },
+        {
+          "title": "Dalla descrizione alle domande",
+          "items": [
+            "Problematizzazione",
+            "Confronto tra studenti e formatori"
+          ]
+        }
+      ],
+      "x": 1000,
+      "y": 380,
+      "label": [
+        "Metadatazione",
+        "delle fonti"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "storie-digitali",
+      "title": "Storie digitali",
+      "description": "Esito della restituzione pubblica: rende consultabile il racconto storico attraverso fonti organizzate in Omeka S, bibliografie in Zotero e materiali geografici in GeoNode.",
+      "branches": [
+        {
+          "title": "Origine del percorso",
+          "items": [
+            "Fonti documentarie → Omeka S → Restituzione pubblica → Storie digitali"
+          ]
+        },
+        {
+          "title": "Risorse collegate",
+          "items": [
+            "Bibliografie con Zotero",
+            "Dati geografici con GeoNode",
+            "Pubblicazione web con WordPress"
+          ]
+        }
+      ],
+      "x": 1600,
+      "y": 1800,
+      "label": [
+        "Storie digitali"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "kind": "action"
+    },
+    {
+      "id": "restituzione",
+      "title": "Restituzione pubblica",
+      "description": "Snodo principale della condivisione pubblica: riceve il lavoro sulle fonti organizzato in Omeka S e si dirama nei Quaderni del LUDiCa, in Storie digitali e nella Serata di restituzione comunitaria.",
+      "branches": [
+        {
+          "title": "Tre forme di restituzione",
+          "items": [
+            "Quaderni del LUDiCa → Unica Press",
+            "Storie digitali",
+            "Serata di restituzione comunitaria"
+          ]
+        },
+        {
+          "title": "Ricerca condivisa",
+          "items": [
+            "Fonti e database da Omeka S",
+            "Dialogo con la comunità",
+            "Nuove domande di ricerca"
+          ]
+        }
+      ],
+      "x": 1300,
+      "y": 1600,
+      "label": [
+        "Restituzione pubblica"
+      ],
+      "labelDx": 0,
+      "labelDy": -49,
+      "labelAnchor": "middle",
+      "kind": "action",
+      "radius": 27,
+      "major": true
+    },
+    {
+      "id": "geoesplorazione",
+      "title": "Geoesplorazione del territorio",
+      "x": 850,
+      "y": 1080,
+      "label": [
+        "Geoesplorazione",
+        "del territorio"
+      ],
+      "kind": "action",
+      "labelDx": 0,
+      "labelDy": -40,
+      "labelAnchor": "middle",
+      "description": "Esplorare il territorio con la comunità, documentando luoghi, tracce e conoscenze.",
+      "branches": [
+        {
+          "title": "Connessioni nella rete",
+          "items": [
+            "Contributi e conoscenze della comunità",
+            "Descrizione e organizzazione in Omeka S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "interviste",
+      "title": "Interviste",
+      "x": 850,
+      "y": 600,
+      "label": [
+        "Interviste"
+      ],
+      "kind": "action",
+      "labelDx": 0,
+      "labelDy": -22,
+      "labelAnchor": "middle",
+      "description": "Raccogliere e contestualizzare testimonianze orali in dialogo con la comunità.",
+      "branches": [
+        {
+          "title": "Connessioni nella rete",
+          "items": [
+            "Contributi e conoscenze della comunità",
+            "Descrizione e organizzazione in Omeka S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nuove-domande",
+      "title": "Nuove domande",
+      "x": 500,
+      "y": 1750,
+      "label": [
+        "Nuove domande"
+      ],
+      "kind": "action",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "description": "I risultati e il dialogo pubblico alimentano nuove questioni e riportano la ricerca al confronto con il territorio.",
+      "branches": []
+    },
+    {
+      "id": "biblioteche",
+      "title": "Biblioteche",
+      "x": 200,
+      "y": 60,
+      "label": [
+        "Biblioteche"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": -25,
+      "labelAnchor": "middle",
+      "description": "Biblioteche: risorsa a supporto delle attività integrate del laboratorio.",
+      "branches": []
+    },
+    {
+      "id": "zotero",
+      "title": "Zotero",
+      "x": 500,
+      "y": 60,
+      "label": [
+        "Zotero"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": -25,
+      "labelAnchor": "middle",
+      "description": "Raccogliere, descrivere e organizzare le bibliografie; collegare i riferimenti alla restituzione in Storie digitali.",
+      "branches": []
+    },
+    {
+      "id": "archivi-pubblici",
+      "title": "Archivi pubblici",
+      "x": 450,
+      "y": 300,
+      "label": [
+        "Archivi pubblici"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": -25,
+      "labelAnchor": "middle",
+      "description": "Fonti conservate negli archivi pubblici: la dematerializzazione riguarda anche questi materiali.",
+      "branches": [
+        {
+          "title": "Azioni collegate",
+          "items": [
+            "Ricerca sulle fonti documentarie",
+            "Dematerializzazione delle fonti"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "archivi-privati",
+      "title": "Archivi privati",
+      "x": 450,
+      "y": 460,
+      "label": [
+        "Archivi privati"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "description": "Fonti conservate negli archivi privati, collegate alla dematerializzazione insieme a quelle degli archivi pubblici.",
+      "branches": []
+    },
+    {
+      "id": "tropy",
+      "title": "Tropy",
+      "x": 1200,
+      "y": 60,
+      "label": [
+        "Tropy"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": -25,
+      "labelAnchor": "middle",
+      "description": "Tropy: risorsa a supporto delle attività integrate del laboratorio.",
+      "branches": []
+    },
+    {
+      "id": "libreoffice",
+      "title": "LibreOffice",
+      "x": 1850,
+      "y": 180,
+      "label": [
+        "LibreOffice"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": -25,
+      "labelAnchor": "middle",
+      "description": "LibreOffice: risorsa a supporto delle attività integrate del laboratorio.",
+      "branches": []
+    },
+    {
+      "id": "scanner",
+      "title": "Scanner LUDiCa",
+      "x": 650,
+      "y": 500,
+      "label": [
+        "Scanner LUDiCa"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": -25,
+      "labelAnchor": "middle",
+      "description": "Acquisire riproduzioni digitali delle fonti analogiche, nel processo di dematerializzazione.",
+      "branches": []
+    },
+    {
+      "id": "qgis",
+      "title": "QGIS",
+      "x": 2050,
+      "y": 950,
+      "label": [
+        "QGIS"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "description": "Punto di convergenza di mappe e cartografie storiche e big data cartografici. Da QGIS si sviluppa la cartografia digitale.",
+      "branches": [
+        {
+          "title": "Due ingressi",
+          "items": [
+            "Mappe e cartografie storiche",
+            "Big data cartografici"
+          ]
+        },
+        {
+          "title": "Elaborazione e condivisione",
+          "items": [
+            "Cartografia digitale",
+            "GeoNode → DOG e Storie digitali"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geonode",
+      "title": "GeoNode",
+      "x": 2050,
+      "y": 1280,
+      "label": [
+        "GeoNode"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "description": "Nodo di condivisione della cartografia digitale: da GeoNode si diramano il collegamento a DOG e quello a Storie digitali.",
+      "branches": [
+        {
+          "title": "Ingresso",
+          "items": [
+            "Cartografia digitale da QGIS"
+          ]
+        },
+        {
+          "title": "Due diramazioni",
+          "items": [
+            "DOG",
+            "Storie digitali"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wordpress",
+      "title": "WordPress",
+      "x": 1850,
+      "y": 1800,
+      "label": [
+        "WordPress"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "description": "WordPress: risorsa a supporto delle attività integrate del laboratorio.",
+      "branches": []
+    },
+    {
+      "id": "omeka-s",
+      "title": "Omeka S",
+      "x": 1300,
+      "y": 1000,
+      "label": [
+        "Omeka S"
+      ],
+      "kind": "resource",
+      "labelDx": 24,
+      "labelDy": 5,
+      "labelAnchor": "start",
+      "description": "Punto di organizzazione delle fonti e dei database: descrizione diretta per un singolo documento, importazione di metadati da foglio di calcolo per raccolte numerose. I database si collegano al versionamento in Zenodo e alimentano la restituzione pubblica.",
+      "branches": [
+        {
+          "title": "Due modalità di ingresso",
+          "items": [
+            "Descrizione diretta del singolo documento",
+            "Importazione dei metadati dal foglio di calcolo"
+          ]
+        },
+        {
+          "title": "Versionamento e restituzione",
+          "items": [
+            "Database e versioni successive in Zenodo",
+            "Restituzione pubblica → Storie digitali"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quaderni",
+      "branches": [
+        {
+          "title": "Filiera editoriale",
+          "items": [
+            "Restituzione pubblica",
+            "Quaderni del LUDiCa",
+            "Unica Press"
+          ]
+        }
+      ],
+      "kind": "action",
+      "title": "Quaderni del LUDiCa",
+      "x": 1000,
+      "y": 1800,
+      "label": [
+        "Quaderni del LUDiCa"
+      ],
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "description": "Pubblicazioni e riflessioni del laboratorio che derivano dalla restituzione pubblica e si collegano a Unica Press."
+    },
+    {
+      "id": "transkribus",
+      "branches": [],
+      "kind": "resource",
+      "title": "Transkribus",
+      "x": 1460,
+      "y": 60,
+      "label": [
+        "Transkribus"
+      ],
+      "labelDx": 0,
+      "labelDy": -25,
+      "labelAnchor": "middle",
+      "description": "Strumento di supporto alla trascrizione, con verifica critica dei risultati sulle fonti."
+    },
+    {
+      "id": "ai-locale",
+      "branches": [],
+      "kind": "resource",
+      "title": "AI locale",
+      "x": 1720,
+      "y": 60,
+      "label": [
+        "AI locale"
+      ],
+      "labelDx": 0,
+      "labelDy": -25,
+      "labelAnchor": "middle",
+      "description": "Supporto alla trascrizione attraverso strumenti di intelligenza artificiale eseguiti localmente; i risultati richiedono controllo critico."
+    },
+    {
+      "id": "fotografie-storiche",
+      "branches": [
+        {
+          "title": "Connessioni nella rete",
+          "items": [
+            "Contributi e conoscenze della comunità",
+            "Descrizione e organizzazione in Omeka S"
+          ]
+        }
+      ],
+      "kind": "action",
+      "title": "Fotografie storiche",
+      "x": 850,
+      "y": 720,
+      "label": [
+        "Fotografie storiche"
+      ],
+      "labelDx": 0,
+      "labelDy": -22,
+      "labelAnchor": "middle",
+      "description": "Raccogliere, descrivere e contestualizzare le fotografie storiche condivise dalla comunità."
+    },
+    {
+      "id": "archivi-locali",
+      "branches": [
+        {
+          "title": "Connessioni nella rete",
+          "items": [
+            "Contributi e conoscenze della comunità",
+            "Descrizione e organizzazione in Omeka S"
+          ]
+        }
+      ],
+      "kind": "action",
+      "title": "Archivi locali (pubblici e privati)",
+      "x": 850,
+      "y": 840,
+      "label": [
+        "Archivi locali",
+        "(pubblici e privati)"
+      ],
+      "labelDx": 0,
+      "labelDy": -40,
+      "labelAnchor": "middle",
+      "description": "Individuare e descrivere materiali di archivi locali pubblici e privati."
+    },
+    {
+      "id": "biblioteche-locali",
+      "branches": [
+        {
+          "title": "Connessioni nella rete",
+          "items": [
+            "Contributi e conoscenze della comunità",
+            "Descrizione e organizzazione in Omeka S",
+            "Bibliografie in Zotero"
+          ]
+        }
+      ],
+      "kind": "action",
+      "title": "Biblioteche locali",
+      "x": 850,
+      "y": 960,
+      "label": [
+        "Biblioteche locali"
+      ],
+      "labelDx": 0,
+      "labelDy": -22,
+      "labelAnchor": "middle",
+      "description": "Raccogliere fonti e riferimenti nelle biblioteche locali, descrivere i materiali in Omeka S e organizzare le bibliografie con Zotero."
+    },
+    {
+      "id": "opere-arte",
+      "branches": [
+        {
+          "title": "Connessioni nella rete",
+          "items": [
+            "Contributi e conoscenze della comunità",
+            "Descrizione e organizzazione in Omeka S"
+          ]
+        }
+      ],
+      "kind": "action",
+      "title": "Opere d’arte",
+      "x": 850,
+      "y": 1200,
+      "label": [
+        "Opere d’arte"
+      ],
+      "labelDx": 0,
+      "labelDy": -22,
+      "labelAnchor": "middle",
+      "description": "Riconoscere, documentare e descrivere le opere d’arte come fonti per la ricerca."
+    },
+    {
+      "id": "architettura",
+      "branches": [
+        {
+          "title": "Connessioni nella rete",
+          "items": [
+            "Contributi e conoscenze della comunità",
+            "Descrizione e organizzazione in Omeka S"
+          ]
+        }
+      ],
+      "kind": "action",
+      "title": "Architettura",
+      "x": 850,
+      "y": 1320,
+      "label": [
+        "Architettura"
+      ],
+      "labelDx": 0,
+      "labelDy": -22,
+      "labelAnchor": "middle",
+      "description": "Documentare edifici e testimonianze architettoniche, collegando forme, usi e contesti storici."
+    },
+    {
+      "id": "spazi-urbani",
+      "branches": [
+        {
+          "title": "Connessioni nella rete",
+          "items": [
+            "Contributi e conoscenze della comunità",
+            "Descrizione e organizzazione in Omeka S"
+          ]
+        }
+      ],
+      "kind": "action",
+      "title": "Spazi urbani",
+      "x": 850,
+      "y": 1440,
+      "label": [
+        "Spazi urbani"
+      ],
+      "labelDx": 0,
+      "labelDy": -22,
+      "labelAnchor": "middle",
+      "description": "Indagare spazi urbani, trasformazioni e memorie attraverso fonti e conoscenze della comunità."
+    },
+    {
+      "id": "mappe-storiche",
+      "title": "Mappe e cartografie storiche",
+      "x": 1850,
+      "y": 800,
+      "description": "Mappe e cartografie storiche sono fonti documentarie. Il loro percorso confluisce in QGIS, dove incontra i big data cartografici, per produrre cartografia digitale.",
+      "label": [
+        "Mappe e cartografie",
+        "storiche"
+      ],
+      "kind": "action",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": [],
+      "focusLine": "cartografica"
+    },
+    {
+      "id": "big-data-cartografici",
+      "title": "Big data cartografici",
+      "x": 2250,
+      "y": 800,
+      "description": "Dati cartografici che confluiscono in QGIS insieme alle mappe e cartografie storiche.",
+      "label": [
+        "Big data",
+        "cartografici"
+      ],
+      "kind": "action",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": []
+    },
+    {
+      "id": "foglio-calcolo",
+      "title": "Foglio di calcolo",
+      "x": 1200,
+      "y": 600,
+      "description": "Per decine o centinaia di documenti, organizzare le descrizioni in righe e colonne prima di importarle in Omeka S.",
+      "label": [
+        "Foglio di calcolo"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": [
+        {
+          "title": "Quando usarlo",
+          "items": [
+            "Metadatazione di numerosi documenti",
+            "Controllo della coerenza di campi e valori",
+            "Importazione delle descrizioni in Omeka S"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zenodo",
+      "title": "Zenodo",
+      "x": 1500,
+      "y": 1280,
+      "description": "Destinazione dei database prodotti e delle loro versioni successive, collegate al database organizzato in Omeka S.",
+      "label": [
+        "Zenodo"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": [
+        {
+          "title": "Versionamento dei database",
+          "items": [
+            "Deposito dei database prodotti",
+            "Nuove versioni man mano che il lavoro procede",
+            "Tracciabilità delle successive restituzioni dei dati"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unica-press",
+      "title": "Unica Press",
+      "x": 750,
+      "y": 1800,
+      "description": "Nodo editoriale connesso ai Quaderni del LUDiCa.",
+      "label": [
+        "Unica Press"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": []
+    },
+    {
+      "id": "problematizzazione",
+      "title": "Problematizzazione",
+      "x": 1850,
+      "y": 380,
+      "description": "Studenti e formatori trasformano la descrizione delle fonti in questioni storiche e interpretazioni, confrontando problemi, contesti e scelte metodologiche.",
+      "label": [
+        "Problematizzazione"
+      ],
+      "kind": "action",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": [
+        {
+          "title": "Accompagnamento degli studenti",
+          "items": [
+            "Dalla metadatazione alle domande storiche",
+            "Discussione e verifica delle interpretazioni"
+          ]
+        },
+        {
+          "title": "Formatori del laboratorio",
+          "items": [
+            "AIPH",
+            "AISO",
+            "AIDUCD",
+            "DH UNICA"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aiph",
+      "title": "AIPH",
+      "x": 1550,
+      "y": 560,
+      "description": "Formatori del laboratorio collegati al confronto con gli studenti nella problematizzazione e nell’interpretazione delle fonti.",
+      "label": [
+        "AIPH"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": []
+    },
+    {
+      "id": "aiso",
+      "title": "AISO",
+      "x": 1770,
+      "y": 560,
+      "description": "Formatori del laboratorio collegati al confronto con gli studenti nella problematizzazione e nell’interpretazione delle fonti.",
+      "label": [
+        "AISO"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": []
+    },
+    {
+      "id": "aiducd",
+      "title": "AIDUCD",
+      "x": 1990,
+      "y": 560,
+      "description": "Formatori del laboratorio collegati al confronto con gli studenti nella problematizzazione e nell’interpretazione delle fonti.",
+      "label": [
+        "AIDUCD"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": []
+    },
+    {
+      "id": "dh-unica",
+      "title": "DH UNICA",
+      "x": 2210,
+      "y": 560,
+      "description": "Formatori del laboratorio collegati al confronto con gli studenti nella problematizzazione e nell’interpretazione delle fonti.",
+      "label": [
+        "DH UNICA"
+      ],
+      "kind": "resource",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": []
+    },
+    {
+      "id": "dog",
+      "title": "DOG",
+      "x": 2250,
+      "y": 1460,
+      "description": "Nodo DOG connesso a GeoNode nel percorso della cartografia digitale.",
+      "label": [
+        "DOG"
+      ],
+      "kind": "action",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": []
+    },
+    {
+      "id": "serata-restituzione",
+      "title": "Serata di restituzione comunitaria",
+      "x": 1300,
+      "y": 1850,
+      "description": "Occasione di incontro pubblico con la comunità per condividere la ricerca, discuterne i risultati e raccogliere nuovi contributi.",
+      "label": [
+        "Serata di restituzione",
+        "comunitaria"
+      ],
+      "kind": "action",
+      "labelDx": 0,
+      "labelDy": 32,
+      "labelAnchor": "middle",
+      "branches": []
+    }
+  ],
+  "lines": [
+    {
+      "id": "metodo",
+      "name": "Ricerca e metodo",
+      "color": "#25815f",
+      "routes": [
+        [
+          "tema",
+          "bibliografia",
+          "documenti"
+        ],
+        [
+          "nuove-domande",
+          [
+            100,
+            1350
+          ],
+          "campo-base",
+          [
+            100,
+            240
+          ],
+          [
+            120,
+            240
+          ],
+          "tema"
+        ],
+        [
+          "restituzione",
+          [
+            1150,
+            1750
+          ],
+          "nuove-domande"
+        ]
+      ]
+    },
+    {
+      "id": "dati",
+      "name": "Bibliografie e Zotero",
+      "color": "#cd9700",
+      "routes": [
+        [
+          "biblioteche",
+          "zotero",
+          "bibliografia"
+        ],
+        [
+          "biblioteche-locali",
+          [
+            760,
+            870
+          ],
+          [
+            570,
+            870
+          ],
+          [
+            460,
+            760
+          ],
+          [
+            460,
+            100
+          ],
+          "zotero"
+        ],
+        [
+          "storie-digitali",
+          [
+            1560,
+            1760
+          ],
+          [
+            1560,
+            700
+          ],
+          [
+            1520,
+            660
+          ],
+          [
+            540,
+            660
+          ],
+          [
+            540,
+            100
+          ],
+          "zotero"
+        ]
+      ]
+    },
+    {
+      "id": "trascrizione",
+      "name": "Acquisizione e trascrizione",
+      "color": "#d64b43",
+      "routes": [
+        [
+          "archivi-pubblici",
+          [
+            730,
+            300
+          ],
+          "documenti"
+        ],
+        [
+          "archivi-pubblici",
+          [
+            570,
+            300
+          ],
+          "dematerializzazione"
+        ],
+        [
+          "archivi-privati",
+          [
+            570,
+            460
+          ],
+          "dematerializzazione"
+        ],
+        [
+          "documenti",
+          "dematerializzazione",
+          "scanner"
+        ],
+        [
+          "documenti",
+          "trascrizione",
+          "tropy"
+        ],
+        [
+          "trascrizione",
+          [
+            1340,
+            180
+          ],
+          "transkribus"
+        ],
+        [
+          "trascrizione",
+          [
+            1300,
+            280
+          ],
+          [
+            1500,
+            280
+          ],
+          "ai-locale"
+        ],
+        [
+          "trascrizione",
+          [
+            1740,
+            180
+          ],
+          "libreoffice"
+        ]
+      ]
+    },
+    {
+      "id": "classificazione",
+      "name": "Fonti, metadati e Omeka S",
+      "color": "#8855b0",
+      "routes": [
+        [
+          "interviste",
+          [
+            900,
+            600
+          ],
+          "omeka-s"
+        ],
+        [
+          "fotografie-storiche",
+          [
+            1020,
+            720
+          ],
+          "omeka-s"
+        ],
+        [
+          "archivi-locali",
+          [
+            1140,
+            840
+          ],
+          "omeka-s"
+        ],
+        [
+          "biblioteche-locali",
+          [
+            1260,
+            960
+          ],
+          "omeka-s"
+        ],
+        [
+          "geoesplorazione",
+          [
+            1220,
+            1080
+          ],
+          "omeka-s"
+        ],
+        [
+          "opere-arte",
+          [
+            1100,
+            1200
+          ],
+          "omeka-s"
+        ],
+        [
+          "architettura",
+          [
+            980,
+            1320
+          ],
+          "omeka-s"
+        ],
+        [
+          "spazi-urbani",
+          [
+            860,
+            1440
+          ],
+          "omeka-s"
+        ],
+        [
+          "metadatazione",
+          [
+            1120,
+            500
+          ],
+          [
+            1380,
+            500
+          ],
+          [
+            1380,
+            920
+          ],
+          "omeka-s"
+        ],
+        [
+          "metadatazione",
+          [
+            1120,
+            500
+          ],
+          [
+            1240,
+            500
+          ],
+          "classificazione"
+        ],
+        [
+          "omeka-s",
+          [
+            1500,
+            1200
+          ],
+          "zenodo"
+        ]
+      ]
+    },
+    {
+      "id": "pubblico",
+      "name": "Comunità e tipologie di fonte",
+      "color": "#0096b6",
+      "routes": [
+        [
+          "campo-base",
+          "comunita"
+        ],
+        [
+          "comunita",
+          [
+            450,
+            1000
+          ],
+          "interviste"
+        ],
+        [
+          "comunita",
+          [
+            570,
+            1000
+          ],
+          "fotografie-storiche"
+        ],
+        [
+          "comunita",
+          [
+            690,
+            1000
+          ],
+          "archivi-locali"
+        ],
+        [
+          "comunita",
+          [
+            810,
+            1000
+          ],
+          "biblioteche-locali"
+        ],
+        [
+          "comunita",
+          [
+            770,
+            1000
+          ],
+          "geoesplorazione"
+        ],
+        [
+          "comunita",
+          [
+            650,
+            1000
+          ],
+          "opere-arte"
+        ],
+        [
+          "comunita",
+          [
+            530,
+            1000
+          ],
+          "architettura"
+        ],
+        [
+          "comunita",
+          [
+            410,
+            1000
+          ],
+          "spazi-urbani"
+        ]
+      ]
+    },
+    {
+      "id": "restituzione",
+      "name": "Restituzione e pubblicazioni",
+      "color": "#234a83",
+      "routes": [
+        [
+          "omeka-s",
+          "restituzione"
+        ],
+        [
+          "restituzione",
+          [
+            1100,
+            1800
+          ],
+          "quaderni",
+          "unica-press"
+        ],
+        [
+          "restituzione",
+          [
+            1500,
+            1800
+          ],
+          "storie-digitali"
+        ],
+        [
+          "restituzione",
+          "serata-restituzione"
+        ],
+        [
+          "geonode",
+          [
+            2050,
+            1500
+          ],
+          [
+            1750,
+            1800
+          ],
+          "storie-digitali"
+        ],
+        [
+          "storie-digitali",
+          "wordpress"
+        ]
+      ]
+    },
+    {
+      "id": "cartografica",
+      "name": "Mappe e dati cartografici",
+      "color": "#177d8b",
+      "routes": [
+        [
+          "documenti",
+          [
+            930,
+            100
+          ],
+          [
+            930,
+            30
+          ],
+          [
+            2290,
+            30
+          ],
+          [
+            2350,
+            90
+          ],
+          [
+            2350,
+            660
+          ],
+          [
+            2290,
+            720
+          ],
+          [
+            1930,
+            720
+          ],
+          "mappe-storiche",
+          [
+            1900,
+            800
+          ],
+          "qgis",
+          "cartografia",
+          "geonode"
+        ],
+        [
+          "big-data-cartografici",
+          [
+            2200,
+            800
+          ],
+          "qgis"
+        ],
+        [
+          "geonode",
+          [
+            2070,
+            1280
+          ],
+          "dog"
+        ],
+        [
+          "geonode",
+          [
+            2050,
+            1500
+          ],
+          [
+            1750,
+            1800
+          ],
+          "storie-digitali"
+        ]
+      ]
+    },
+    {
+      "id": "formazione",
+      "name": "Problematizzazione e formatori",
+      "color": "#b2783c",
+      "routes": [
+        [
+          "metadatazione",
+          "problematizzazione",
+          [
+            1670,
+            380
+          ],
+          [
+            1670,
+            440
+          ],
+          "aiph"
+        ],
+        [
+          "problematizzazione",
+          [
+            1770,
+            460
+          ],
+          "aiso"
+        ],
+        [
+          "problematizzazione",
+          [
+            1990,
+            520
+          ],
+          "aiducd"
+        ],
+        [
+          "problematizzazione",
+          [
+            2030,
+            380
+          ],
+          "dh-unica"
+        ]
+      ]
+    },
+    {
+      "id": "documentaire",
+      "name": "Fonti documentarie → restituzione",
+      "color": "#c34e60",
+      "routes": [
+        [
+          "documenti",
+          [
+            1070,
+            400
+          ],
+          [
+            1070,
+            770
+          ],
+          "omeka-s",
+          "restituzione",
+          [
+            1500,
+            1800
+          ],
+          "storie-digitali"
+        ],
+        [
+          "documenti",
+          [
+            850,
+            230
+          ],
+          "metadatazione",
+          [
+            1120,
+            500
+          ],
+          [
+            1380,
+            500
+          ],
+          [
+            1380,
+            920
+          ],
+          "omeka-s"
+        ],
+        [
+          "metadatazione",
+          [
+            1000,
+            600
+          ],
+          "foglio-calcolo",
+          [
+            1380,
+            780
+          ],
+          [
+            1380,
+            920
+          ],
+          "omeka-s"
+        ],
+        [
+          "restituzione",
+          [
+            1100,
+            1800
+          ],
+          "quaderni",
+          "unica-press"
+        ],
+        [
+          "omeka-s",
+          [
+            1500,
+            1200
+          ],
+          "zenodo"
+        ],
+        [
+          "restituzione",
+          "serata-restituzione"
+        ]
+      ]
+    }
+  ]
+};
+
+/* MOTORE DELLA RETE: separato dai dati e senza dipendenze. */
+(() => {
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+const S={node:null,line:null,nodes:new Map(),members:new Map(),adjacent:new Map(),segments:[],graphics:new Map(),view:null,drag:null,suppressClick:false};
+const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
+const svg=(tag,attrs={})=>{const e=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,String(v)));return e};
+function validate(d){
+ if(!Number.isFinite(d.width)||!Number.isFinite(d.height)||d.width<=0||d.height<=0)throw Error('Dimensioni mappa non valide.');
+ for(const k of ['nodes','lines']){if(!Array.isArray(d[k])||!d[k].length)throw Error(`Mancano i dati: ${k}`);const ids=new Set();d[k].forEach(n=>{if(!n||!/^[a-z][a-z0-9-]*$/.test(n.id)||ids.has(n.id))throw Error(`ID non valido o duplicato: ${n?.id}`);ids.add(n.id)})}
+ const ids=new Set(d.nodes.map(n=>n.id));
+ d.nodes.forEach(n=>{if(typeof n.title!=='string'||typeof n.description!=='string'||![n.x,n.y].every(Number.isFinite)||n.x<0||n.y<0||n.x>d.width||n.y>d.height)throw Error(`Nodo non valido: ${n.id}`);if(n.branches!==undefined&&(!Array.isArray(n.branches)||n.branches.some(b=>!b||typeof b.title!=='string'||!Array.isArray(b.items)||b.items.some(i=>typeof i!=='string'))))throw Error(`Dettagli non validi: ${n.id}`)});
+ d.nodes.forEach(n=>{if(n.focusLine&&!d.lines.some(l=>l.id===n.focusLine))throw Error(`Linea di evidenziazione inesistente per ${n.id}`)});
+ d.lines.forEach(l=>{if(!/^#[a-f0-9]{6}$/i.test(l.color)||typeof l.name!=='string'||!Array.isArray(l.routes)||!l.routes.length)throw Error(`Linea non valida: ${l.id}`);l.routes.forEach(r=>{if(!Array.isArray(r)||r.length<2||typeof r[0]!=='string'||typeof r.at(-1)!=='string'||r.filter(p=>typeof p==='string').length<2)throw Error(`Percorso non valido: ${l.id}`);r.forEach(p=>{if(typeof p==='string'?!ids.has(p):!Array.isArray(p)||p.length!==2||!p.every(Number.isFinite))throw Error(`Riferimento o curva non valido nella linea ${l.id}: ${p}`)})})});
+ const served=new Set(d.lines.flatMap(l=>l.routes.flat().filter(p=>typeof p==='string')));d.nodes.forEach(n=>{if(!served.has(n.id))throw Error(`Lo snodo ${n.id} non è collegato a una linea.`)});
+}
+function buildGraph(d){
+ const nodes=new Map(d.nodes.map(n=>[n.id,n])),members=new Map(d.nodes.map(n=>[n.id,new Set()])),adjacent=new Map(d.nodes.map(n=>[n.id,new Set()])),segments=[];
+ d.lines.forEach(line=>line.routes.forEach(route=>{
+  let from=null,points=[];
+  route.forEach(ref=>{
+   if(Array.isArray(ref)){points.push({x:ref[0],y:ref[1]});return}
+   const n=nodes.get(ref);members.get(ref).add(line.id);points.push({x:n.x,y:n.y});
+   if(from!==null){segments.push({line:line.id,color:line.color,from,to:ref,points:[...points]});adjacent.get(from).add(ref);adjacent.get(ref).add(from)}
+   from=ref;points=[{x:n.x,y:n.y}];
+  });
+ }));return{nodes,members,adjacent,segments};
+}
+function metroPath(input,radius=10){
+ const points=input.filter((p,i)=>!i||p.x!==input[i-1].x||p.y!==input[i-1].y);
+ if(!points.length)return '';
+ let d=`M ${points[0].x} ${points[0].y}`;
+ for(let i=1;i<points.length-1;i++){
+  const a=points[i-1],p=points[i],b=points[i+1],la=Math.hypot(p.x-a.x,p.y-a.y),lb=Math.hypot(b.x-p.x,b.y-p.y);
+  const r=Math.min(radius,la/2,lb/2),u={x:(p.x-a.x)/la,y:(p.y-a.y)/la},v={x:(b.x-p.x)/lb,y:(b.y-p.y)/lb};
+  if(Math.abs(u.x*v.y-u.y*v.x)<1e-8){d+=` L ${p.x} ${p.y}`;continue;}
+  d+=` L ${p.x-u.x*r} ${p.y-u.y*r} Q ${p.x} ${p.y} ${p.x+v.x*r} ${p.y+v.y*r}`;
+ }
+ if(points.length>1){const p=points.at(-1);d+=` L ${p.x} ${p.y}`;}return d;
+}
+function drawNetwork(){
+ const root=$('map');root.style.setProperty('--map-aspect',`${MAP_DATA.width}/${MAP_DATA.height}`);root.setAttribute('viewBox',`0 0 ${MAP_DATA.width} ${MAP_DATA.height}`);
+ const districts=svg('g',{'aria-hidden':'true'});
+ (MAP_DATA.districts||[]).forEach(d=>{
+  districts.append(svg('rect',{x:d.x,y:d.y,width:d.w,height:d.h,rx:45,fill:'#f1f5f1'}));
+  const text=svg('text',{x:d.tx,y:d.ty,class:'district'});text.textContent=d.title;districts.append(text);
+ });
+ root.append(districts);
+ const tracks=svg('g',{'aria-hidden':'true'});
+ S.segments.forEach(seg=>{
+  const d=metroPath(seg.points),g=svg('g',{class:'edge-group'});
+  g.append(svg('path',{d,class:'edge-halo'}),svg('path',{d,class:'edge-track',stroke:seg.color}));tracks.append(g);seg.element=g;
+ });root.append(tracks);
+ const stations=svg('g');
+ MAP_DATA.nodes.forEach(n=>{
+  const membership=[...S.members.get(n.id)],shared=membership.length>1||S.adjacent.get(n.id).size>2,color=MAP_DATA.lines.find(l=>l.id===membership[0])?.color||'#19343c';
+  const g=svg('g',{class:`station ${n.major?'is-major ':''}${n.kind==='resource'?'resource':'action'}`,transform:`translate(${n.x} ${n.y})`,tabindex:0,role:'button','aria-controls':'detail','aria-expanded':'false','aria-label':`${n.title}. ${shared?'Snodo condiviso. ':''}Linee: ${membership.map(id=>MAP_DATA.lines.find(l=>l.id===id).name).join(', ')}`});
+  g.style.setProperty('--node-color',color);
+  const title=svg('title');title.textContent=`${n.title} — ${n.description}`;
+  const radius=Number.isFinite(n.radius)?Math.max(9,Math.min(40,n.radius)):(shared?13:(n.kind==='resource'?7:9));
+  g.append(title,svg('circle',{r:Math.max(24,radius+7),fill:'transparent'}),svg('circle',{r:radius+7,class:'focus-ring'}));
+  if(shared)g.append(svg('circle',{r:radius,class:'interchange'}),svg('circle',{r:radius*.62,class:'interchange'}),svg('circle',{r:Math.max(3,radius*.2),class:'center'}));
+  else g.append(svg('circle',{r:radius,class:'node'}));
+  const text=svg('text',{class:'station-label','text-anchor':n.labelAnchor||'middle','aria-hidden':'true'});
+  (n.label||[n.title]).forEach((part,index)=>{const t=svg('tspan',{x:n.labelDx??0,y:(n.labelDy??30)+index*18});t.textContent=part;text.append(t)});g.append(text);
+  g.addEventListener('click',()=>{if(!S.suppressClick)selectNode(S.node===n.id?null:n.id)});
+  g.addEventListener('keydown',e=>{
+   if(e.key==='Enter'||e.key===' '){e.preventDefault();selectNode(S.node===n.id?null:n.id)}
+   else if(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();e.stopPropagation();moveFocus(n,e.key)}
+  });stations.append(g);S.graphics.set(n.id,g);
+  const option=make('option','',n.title);option.value=n.id;$('station-select').append(option);
+ });root.append(stations);
+ const all=make('button','line-button','Tutta la rete');all.type='button';all.dataset.line='';all.addEventListener('click',()=>selectLine(null));$('legend').append(all);
+ MAP_DATA.lines.forEach(l=>{const b=make('button','line-button');b.type='button';b.dataset.line=l.id;b.style.setProperty('--line-color',l.color);const sw=make('span','swatch');sw.setAttribute('aria-hidden','true');b.append(sw,document.createTextNode(l.name));b.addEventListener('click',()=>selectLine(S.line===l.id?null:l.id));$('legend').append(b)});
+ $('count').textContent=`${MAP_DATA.nodes.length} SNODI / ${MAP_DATA.lines.length} LINEE`;
+ applyHighlight();
+}
+function applyHighlight(){
+ const focusLine=S.node?S.nodes.get(S.node).focusLine:null;
+ const line=focusLine||S.line,near=S.node?S.adjacent.get(S.node):null;
+ S.segments.forEach(e=>{const on=line?e.line===line:S.node?e.from===S.node||e.to===S.node:true;e.element.classList.toggle('is-dimmed',!on)});
+ S.graphics.forEach((g,id)=>{const on=line?S.members.get(id).has(line):S.node?id===S.node||near.has(id):true;g.classList.toggle('is-dimmed',!on);g.classList.toggle('is-selected',id===S.node);g.setAttribute('aria-expanded',String(id===S.node))});
+ $('legend').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.line||null)===(line||null)&&(!S.node||!!focusLine))));
+}
+
+function changeHash(id){try{const u=new URL(location.href);u.hash=id?`snodo-${id}`:'';history.replaceState(null,'',u)}catch{}}
+function selectLine(id){S.line=id;S.node=null;$('detail').hidden=true;$('station-select').value='';changeHash(null);applyHighlight();$('announcement').textContent=id?`Linea evidenziata: ${MAP_DATA.lines.find(l=>l.id===id).name}`:'Tutta la rete visibile';}
+function safeURL(value){if(!value)return null;try{const u=new URL(value,location.href);return ['https:','http:'].includes(u.protocol)||String(value).startsWith('#')?u.href:null}catch{return null}}
+function selectNode(id,{hash=true,scroll=true}={}){
+ const n=S.nodes.get(id);S.node=n?n.id:null;S.line=null;$('detail').hidden=!n;$('station-select').value=S.node||'';if(hash)changeHash(S.node);applyHighlight();if(!n)return;
+ $('detail-kicker').textContent=(S.members.get(id).size>1||S.adjacent.get(id).size>2)?'SNODO CONDIVISO / AZIONI INTEGRATE':n.kind==='resource'?'RISORSA / STRUMENTO':'AZIONE DEL LABORATORIO';
+ $('detail-title').textContent=n.title;$('description').textContent=n.description;$('branches').replaceChildren();
+ const branches=n.branches?.length?n.branches:[{title:'Funzione nella rete',items:['Questo elemento partecipa alle connessioni evidenziate nella cartina.','Esplora gli snodi collegati per vedere come si integra nelle azioni del laboratorio.']}];
+ branches.forEach(b=>{const a=make('article','branch'),ul=make('ul');b.items.forEach(i=>ul.append(make('li','',i)));a.append(make('h3','',b.title),ul);$('branches').append(a)});
+ $('badges').replaceChildren();[...S.members.get(id)].forEach(key=>{const l=MAP_DATA.lines.find(l=>l.id===key),b=make('span','badge',l.name);b.style.setProperty('--line-color',l.color);$('badges').append(b)});
+ $('connections').replaceChildren();S.adjacent.get(id).forEach(key=>{const b=make('button','connection',S.nodes.get(key).title);b.type='button';b.addEventListener('click',()=>{selectNode(key,{scroll:false});$('show-node').focus()});$('connections').append(b)});
+ const url=safeURL(n.url);$('project-link').hidden=!url;if(url){$('project-link').href=url;$('project-link').textContent=n.linkLabel||'Esplora il progetto ↗'}else $('project-link').removeAttribute('href');
+ $('status').textContent=`${S.adjacent.get(id).size} connessioni dirette · ${S.members.get(id).size} linee`;$('announcement').textContent=`${n.title}: ${n.focusLine?'percorso completo fino alla restituzione evidenziato':'connessioni evidenziate'} e dettagli aperti dopo la mappa.`;
+ if(scroll)$('detail').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth',block:'nearest'});
+}
+function moveFocus(n,key){
+ const [dx,dy]=({ArrowRight:[1,0],ArrowLeft:[-1,0],ArrowDown:[0,1],ArrowUp:[0,-1]})[key];
+ const target=MAP_DATA.nodes.filter(p=>(p.x-n.x)*dx+(p.y-n.y)*dy>1).sort((a,b)=>{
+  const score=p=>Math.hypot(p.x-n.x,p.y-n.y)+2*Math.abs((p.x-n.x)*dy-(p.y-n.y)*dx);return score(a)-score(b)
+ })[0];if(target){S.graphics.get(target.id).focus();ensureVisible(target)}
+}
+/* Zoom e trascinamento modificano solo il viewBox: nessuna perdita di topologia. */
+function setView(v){S.view=v;$('map').setAttribute('viewBox',`${v.x} ${v.y} ${v.w} ${v.h}`);const scale=MAP_DATA.width/v.w;$('zoom-in').disabled=scale>=3.99;$('zoom-out').disabled=scale<=1.001;}
+function fit(){setView({x:0,y:0,w:MAP_DATA.width,h:MAP_DATA.height})}
+function zoom(factor){const v=S.view,scale=Math.min(4,Math.max(1,MAP_DATA.width/v.w*factor)),w=MAP_DATA.width/scale,h=MAP_DATA.height/scale;setView({x:v.x+(v.w-w)/2,y:v.y+(v.h-h)/2,w,h})}
+function ensureVisible(n){const v=S.view;if(n.x<v.x+40||n.x>v.x+v.w-40||n.y<v.y+40||n.y>v.y+v.h-40)setView({...v,x:n.x-v.w/2,y:n.y-v.h/2})}
+function mapPoint(clientX,clientY){const matrix=$('map').getScreenCTM();if(!matrix)return null;const p=$('map').createSVGPoint();p.x=clientX;p.y=clientY;return p.matrixTransform(matrix.inverse())}
+function bindNavigation(){
+ $('zoom-in').addEventListener('click',()=>zoom(1.4));$('zoom-out').addEventListener('click',()=>zoom(1/1.4));$('fit').addEventListener('click',fit);
+ $('map').addEventListener('pointerdown',e=>{if(e.button!==0||S.drag)return;const p=mapPoint(e.clientX,e.clientY);if(p)S.drag={id:e.pointerId,clientX:e.clientX,clientY:e.clientY,p,view:{...S.view},moved:false}});
+ window.addEventListener('pointermove',e=>{const d=S.drag;if(!d||d.id!==e.pointerId)return;if(Math.hypot(e.clientX-d.clientX,e.clientY-d.clientY)>5)d.moved=true;if(!d.moved)return;const p=mapPoint(e.clientX,e.clientY);if(!p)return;const v=S.view;setView({...v,x:v.x+d.p.x-p.x,y:v.y+d.p.y-p.y});$('map').classList.add('is-dragging')});
+ const finish=e=>{if(!S.drag||S.drag.id!==e.pointerId)return;S.suppressClick=S.drag.moved;S.drag=null;$('map').classList.remove('is-dragging');setTimeout(()=>{S.suppressClick=false},0)};
+ window.addEventListener('pointerup',finish);window.addEventListener('pointercancel',finish);
+ $('map').addEventListener('keydown',e=>{if(e.key==='+'||e.key==='='){e.preventDefault();zoom(1.4)}else if(e.key==='-'){e.preventDefault();zoom(1/1.4)}else if(e.key==='0'){e.preventDefault();fit()}});
+ $('station-select').addEventListener('change',e=>selectNode(e.target.value||null));
+ $('close').addEventListener('click',()=>{const id=S.node;selectNode(null,{scroll:false});if(id){ensureVisible(S.nodes.get(id));S.graphics.get(id).focus()}});
+ $('show-node').addEventListener('click',()=>{if(S.node){ensureVisible(S.nodes.get(S.node));$('map').scrollIntoView({block:'center'});S.graphics.get(S.node).focus()}});
+ $('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);$('status').textContent='Link allo snodo copiato.'}catch{$('status').textContent='Copia l’indirizzo dalla barra del browser per condividere questo snodo.'}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){const id=S.node;selectLine(null);if(id)S.graphics.get(id).focus()}});
+ const readHash=()=>{const id=location.hash.slice(1).replace(/^snodo-/,'');selectNode(id,{hash:false,scroll:false})};window.addEventListener('hashchange',readHash);readHash();
+}
+try{validate(MAP_DATA);Object.assign(S,buildGraph(MAP_DATA));drawNetwork();fit();if(matchMedia('(max-width:800px)').matches)zoom(2.2);bindNavigation()}catch(e){$('stage').replaceChildren(make('p','error',`Impossibile costruire la rete: ${e.message}`));console.error(e)}
+})();
+</script>
+
+
+</body></html>
