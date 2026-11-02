@@ -56,30 +56,6 @@
       padding: var(--padding-sezione);
       font-family: var(--font-corpo);
     }
-    .galleria-intestazione { margin-bottom: 48px; text-align: center; }
-    .galleria-intestazione h2 {
-      color: var(--colore-titolo-sezione);
-      font-family: var(--font-titolo);
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-style: italic;
-      font-weight: 300;
-      letter-spacing: -.01em;
-      line-height: 1.15;
-    }
-    .galleria-sottotitolo {
-      max-width: 520px;
-      margin: 12px auto 0 !important;
-      color: var(--colore-descrizione);
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-    .galleria-separatore {
-      width: 48px;
-      height: 2px;
-      margin: 20px auto 0 !important;
-      border: 0;
-      background: var(--colore-linea-sep);
-    }
     .galleria-griglia {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(var(--larghezza-card-min), 1fr));
@@ -212,15 +188,7 @@
   </style>
 </head>
 <body>
-  <section class="galleria-wrapper" aria-labelledby="titolo-galleria">
-    <div class="galleria-intestazione">
-      <h2 id="titolo-galleria">Archivio LUDiCa</h2>
-      <p class="galleria-sottotitolo">
-        Esplora ogni edizione del nostro laboratorio, i temi affrontati e i materiali prodotti.
-      </p>
-      <hr class="galleria-separatore">
-    </div>
-
+  <section class="galleria-wrapper" aria-label="Edizioni LUDiCa">
     <div id="galleria-edizioni" class="galleria-griglia" aria-live="polite" aria-busy="true">
       <p class="galleria-stato">Caricamento delle edizioni…</p>
     </div>
