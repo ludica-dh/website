@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>LUDiCa. Archivio edizioni</title>
+
+<!--
+    CONFIGURAZIONE RAPIDA
+    1. Pubblica il foglio: File > Condividi > Pubblica sul Web.
+    2. Copia l'URL del foglio e incollalo in CONFIG.FOGLIO_URL, in fondo al file.
+    3. La prima riga deve contenere:
+       EDIZIONE | TITOLO | SINTESI | URL COPERTINA | URL ACCESSO EDIZIONE
+
+    Il codice ignora le colonne e le righe vuote.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&amp;family=DM+Sans:wght@400;500&amp;display=swap" rel="stylesheet">
+
+<style>
+    :root {
+      --font-titolo: 'Fraunces', Georgia, serif;
+      --font-corpo: 'DM Sans', system-ui, sans-serif;
+      --colore-sfondo-pagina: #fff;
+      --colore-sfondo-card: #fff;
+      --colore-titolo-sezione: #1a1a18;
+      --colore-anno: #7a6f5a;
+      --colore-titolo-card: #1a1a18;
+      --colore-descrizione: #5a5245;
+      --colore-bottone-sfondo: #1a1a18;
+      --colore-bottone-testo: #f7f5f0;
+      --colore-bottone-hover: #3d3830;
+      --colore-bordo-card: #e8e3d8;
+      --colore-linea-sep: #c9b99a;
+      --altezza-immagine: 240px;
+      --larghezza-card-min: 260px;
+      --gap-griglia: 24px;
+      --padding-card: 20px;
+      --padding-sezione: 60px 20px;
+      --raggio-card: 12px;
+      --raggio-immagine: 8px;
+      --raggio-bottone: 6px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #fff; }
+    .galleria-wrapper * { margin: 0; padding: 0; }
+    .galleria-wrapper img { display: block; max-width: 100%; }
+    .galleria-wrapper a { color: inherit; text-decoration: none; }
+
+    .galleria-wrapper {
+      background: var(--colore-sfondo-pagina);
+      padding: var(--padding-sezione);
+      font-family: var(--font-corpo);
+    }
+    .galleria-intestazione { margin-bottom: 48px; text-align: center; }
+    .galleria-intestazione h2 {
+      color: var(--colore-titolo-sezione);
+      font-family: var(--font-titolo);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: -.01em;
+      line-height: 1.15;
+    }
+    .galleria-sottotitolo {
+      max-width: 520px;
+      margin: 12px auto 0 !important;
+      color: var(--colore-descrizione);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .galleria-separatore {
+      width: 48px;
+      height: 2px;
+      margin: 20px auto 0 !important;
+      border: 0;
+      background: var(--colore-linea-sep);
+    }
+    .galleria-griglia {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--larghezza-card-min), 1fr));
+      gap: var(--gap-griglia);
+      max-width: 1200px;
+      margin-inline: auto;
+    }
+    .edizione-card {
+      display: flex;
+      overflow: hidden;
+      flex-direction: column;
+      border: 1px solid var(--colore-bordo-card);
+      border-radius: var(--raggio-card);
+      background: var(--colore-sfondo-card);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .edizione-card:hover,
+    .edizione-card:focus-within {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .10);
+    }
+    .edizione-card-immagine {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: var(--altezza-immagine);
+      border-radius: var(--raggio-immagine) var(--raggio-immagine) 0 0;
+      background: #ede9e0;
+    }
+    .edizione-card-immagine img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform .4s ease;
+    }
+    .edizione-card:hover .edizione-card-immagine img { transform: scale(1.04); }
+    .edizione-card-immagine img.errore-immagine { display: none; }
+    .edizione-card-immagine:has(img.errore-immagine)::after {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      color: #7a6f5a;
+      content: 'Copertina non disponibile';
+      text-align: center;
+    }
+    .edizione-badge-anno {
+      position: absolute;
+      z-index: 1;
+      top: 12px;
+      left: 12px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(26, 26, 24, .75);
+      color: #f7f5f0;
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(4px);
+    }
+    .edizione-card-corpo {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      padding: var(--padding-card);
+    }
+    .edizione-anno-testo {
+      margin-bottom: 6px !important;
+      color: var(--colore-anno);
+      font-size: .8rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .edizione-titolo {
+      margin-bottom: 10px !important;
+      color: var(--colore-titolo-card);
+      font-family: var(--font-titolo);
+      font-size: 1.3rem;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .edizione-descrizione {
+      display: -webkit-box;
+      overflow: hidden;
+      flex: 1;
+      margin-bottom: 20px !important;
+      color: var(--colore-descrizione);
+      font-size: .9rem;
+      line-height: 1.65;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+    }
+    .edizione-link-bottone {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 10px 20px;
+      border-radius: var(--raggio-bottone);
+      background: var(--colore-bottone-sfondo);
+      color: var(--colore-bottone-testo) !important;
+      font-size: .85rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      text-align: center;
+      transition: background .2s ease;
+    }
+    .edizione-link-bottone:hover,
+    .edizione-link-bottone:focus-visible { background: var(--colore-bottone-hover); }
+
+    .galleria-stato {
+      grid-column: 1 / -1;
+      padding: 28px;
+      border: 1px solid var(--colore-bordo-card);
+      border-radius: var(--raggio-card);
+      color: var(--colore-descrizione);
+      line-height: 1.6;
+      text-align: center;
+    }
+    .galleria-stato.errore { border-color: #c88; color: #7d2525; background: #fff8f8; }
+
+    @media (max-width: 400px) {
+      .galleria-griglia { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .edizione-card, .edizione-card-immagine img { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="galleria-wrapper" aria-labelledby="titolo-galleria">
+    <div class="galleria-intestazione">
+      <h2 id="titolo-galleria">Archivio LUDiCa</h2>
+      <p class="galleria-sottotitolo">
+        Esplora ogni edizione del nostro laboratorio, i temi affrontati e i materiali prodotti.
+      </p>
+      <hr class="galleria-separatore">
+    </div>
+
+    <div id="galleria-edizioni" class="galleria-griglia" aria-live="polite" aria-busy="true">
+      <p class="galleria-stato">Caricamento delle edizioni…</p>
+    </div>
+    <noscript>
+      <p class="galleria-stato errore">Per visualizzare le edizioni è necessario abilitare JavaScript.</p>
+    </noscript>
+  </section>
+
+  <script>
+    /* ==============================================================
+       CONFIGURAZIONE: modifica soltanto questi valori.
+       Sono accettati sia l'URL normale del foglio sia quello ottenuto
+       con “Pubblica sul Web”. Se il foglio ha più schede, inserisci
+       il relativo gid oppure lascia null per ricavarlo dall'URL.
+       ============================================================== */
+    const CONFIG = {
+      FOGLIO_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnbHCs4ZDmMDJYRyP5vbQ4iY97UKBfe-_THwDbICkgeHy7plN96vXHZXzi1mvWsW5dtZBY1nfoN0sI/pub?gid=1780390186&single=true&output=csv',
+      GID: '1780390186',
+      ORDINA_DAL_PIU_RECENTE: true,
+      TESTO_BOTTONE: "Scopri l'edizione →"
+    };
+
+    const COLONNE = {
+      EDIZIONE: 'EDIZIONE',
+      TITOLO: 'TITOLO',
+      SINTESI: 'SINTESI',
+      COPERTINA: 'URL COPERTINA',
+      ACCESSO: 'URL ACCESSO EDIZIONE'
+    };
+
+    let griglia;
+
+    function normalizzaIntestazione(valore) {
+      return String(valore || '')
+        .replace(/^\uFEFF/, '')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toUpperCase();
+    }
+
+    function creaUrlCsv(urlInserito, gidConfigurato) {
+      const url = String(urlInserito || '').trim();
+      if (!url || url.includes('INCOLLA_QUI')) {
+        throw new Error('Inserisci in CONFIG.FOGLIO_URL l’indirizzo del tuo Google Sheet.');
+      }
+
+      let parsed;
+      try { parsed = new URL(url); }
+      catch { throw new Error('L’URL del foglio non è valido.'); }
+
+      const gid = gidConfigurato ?? parsed.searchParams.get('gid') ??
+        (parsed.hash.match(/gid=(\d+)/)?.[1]) ?? '0';
+
+      // URL generato da “Pubblica sul Web”: /spreadsheets/d/e/.../pub oppure /pubhtml
+      if (/\/spreadsheets\/d\/e\/[^/]+\/(?:pub|pubhtml)\/?$/.test(parsed.pathname)) {
+        parsed.pathname = parsed.pathname.replace(/\/(?:pub|pubhtml)\/?$/, '/pub');
+        parsed.search = '';
+        parsed.hash = '';
+        parsed.searchParams.set('output', 'csv');
+        parsed.searchParams.set('gid', gid);
+        return parsed.toString();
+      }
+
+      // URL normale: /spreadsheets/d/ID/edit
+      const id = parsed.pathname.match(/\/spreadsheets\/d\/([^/]+)/)?.[1];
+      if (!id) throw new Error('Non riesco a riconoscere l’ID del Google Sheet.');
+      return `https://docs.google.com/spreadsheets/d/${encodeURIComponent(id)}/gviz/tq?tqx=out:csv&gid=${encodeURIComponent(gid)}`;
+    }
+
+    // Parser CSV compatibile con virgole, virgolette e ritorni a capo nei testi.
+    function parseCsv(testo) {
+      const righe = [];
+      let riga = [], campo = '', traVirgolette = false;
+
+      for (let i = 0; i < testo.length; i++) {
+        const c = testo[i];
+        if (traVirgolette) {
+          if (c === '"' && testo[i + 1] === '"') { campo += '"'; i++; }
+          else if (c === '"') traVirgolette = false;
+          else campo += c;
+        } else if (c === '"') traVirgolette = true;
+        else if (c === ',') { riga.push(campo); campo = ''; }
+        else if (c === '\n') { riga.push(campo); righe.push(riga); riga = []; campo = ''; }
+        else if (c !== '\r') campo += c;
+      }
+      if (campo || riga.length) { riga.push(campo); righe.push(riga); }
+      return righe;
+    }
+
+    function urlSicuro(valore) {
+      if (!valore) return '';
+      try {
+        const url = new URL(String(valore).trim(), window.location.href);
+        return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+      } catch { return ''; }
+    }
+
+    function urlImmagine(valore) {
+      const url = urlSicuro(valore);
+      if (!url) return '';
+      const driveId = url.match(/drive\.google\.com\/file\/d\/([^/]+)/)?.[1] ||
+        new URL(url).searchParams.get('id');
+      return driveId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1600` : url;
+    }
+
+    function elemento(tag, classe, testo) {
+      const nodo = document.createElement(tag);
+      if (classe) nodo.className = classe;
+      if (testo !== undefined) nodo.textContent = testo;
+      return nodo;
+    }
+
+    function creaCard(dati) {
+      const card = elemento('article', 'edizione-card');
+      const areaImmagine = elemento('div', 'edizione-card-immagine');
+      const immagine = document.createElement('img');
+      immagine.src = urlImmagine(dati.copertina);
+      immagine.alt = dati.titolo ? `Copertina: ${dati.titolo}` : `Copertina edizione ${dati.edizione}`;
+      immagine.loading = 'lazy';
+      immagine.decoding = 'async';
+      immagine.addEventListener('error', () => immagine.classList.add('errore-immagine'));
+      areaImmagine.append(immagine, elemento('span', 'edizione-badge-anno', dati.edizione));
+
+      const corpo = elemento('div', 'edizione-card-corpo');
+      corpo.append(
+        elemento('p', 'edizione-anno-testo', `Edizione ${dati.edizione}`),
+        elemento('h3', 'edizione-titolo', dati.titolo),
+        elemento('p', 'edizione-descrizione', dati.sintesi)
+      );
+
+      const accesso = urlSicuro(dati.accesso);
+      if (accesso) {
+        const link = elemento('a', 'edizione-link-bottone', CONFIG.TESTO_BOTTONE);
+        link.href = accesso;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.setAttribute('aria-label', `${CONFIG.TESTO_BOTTONE.replace('→', '').trim()}: ${dati.titolo}`);
+        corpo.append(link);
+      }
+
+      card.append(areaImmagine, corpo);
+      return card;
+    }
+
+    function mostraErrore(messaggio) {
+      griglia = griglia || document.getElementById('galleria-edizioni');
+      if (!griglia) return;
+      griglia.replaceChildren(elemento('p', 'galleria-stato errore', messaggio));
+      griglia.setAttribute('aria-busy', 'false');
+    }
+
+    function caricaConJsonp() {
+      return new Promise((resolve, reject) => {
+        const url = new URL(CONFIG.FOGLIO_URL);
+        url.pathname = url.pathname.replace(/\/(?:pub|pubhtml)\/?$/, '/gviz/tq');
+        url.search = '';
+        url.searchParams.set('gid', CONFIG.GID || '0');
+        url.searchParams.set('tqx', 'out:json');
+
+        const script = document.createElement('script');
+        const timer = setTimeout(() => termina(new Error('Google Sheets non ha risposto entro 15 secondi.')), 15000);
+        const googlePrecedente = window.google;
+
+        function termina(errore, matrice) {
+          clearTimeout(timer);
+          script.remove();
+          if (googlePrecedente === undefined) delete window.google;
+          else window.google = googlePrecedente;
+          errore ? reject(errore) : resolve(matrice);
+        }
+
+        window.google = window.google || {};
+        window.google.visualization = window.google.visualization || {};
+        window.google.visualization.Query = window.google.visualization.Query || {};
+        window.google.visualization.Query.setResponse = risposta => {
+          if (risposta.status === 'error') {
+            termina(new Error(risposta.errors?.[0]?.detailed_message || 'Errore nella risposta di Google Sheets.'));
+            return;
+          }
+          const tabella = risposta.table;
+          const matrice = [
+            tabella.cols.map(colonna => colonna.label || colonna.id || ''),
+            ...tabella.rows.map(riga => tabella.cols.map((_, i) => {
+              const cella = riga.c?.[i];
+              return cella ? String(cella.f ?? cella.v ?? '') : '';
+            }))
+          ];
+          termina(null, matrice);
+        };
+
+        script.onerror = () => termina(new Error('Caricamento alternativo di Google Sheets non riuscito.'));
+        script.src = url.toString();
+        document.head.append(script);
+      });
+    }
+
+    async function caricaMatrice() {
+      const controllo = new AbortController();
+      const timeout = setTimeout(() => controllo.abort(), 10000);
+      try {
+        const risposta = await fetch(creaUrlCsv(CONFIG.FOGLIO_URL, CONFIG.GID), {
+          cache: 'no-store',
+          signal: controllo.signal
+        });
+        if (!risposta.ok) throw new Error(`Google Sheets ha risposto con errore ${risposta.status}.`);
+        return parseCsv(await risposta.text());
+      } catch (erroreFetch) {
+        console.warn('CSV non disponibile, provo il caricamento JSONP:', erroreFetch);
+        return caricaConJsonp();
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    async function caricaGalleria() {
+      try {
+        griglia = document.getElementById('galleria-edizioni');
+        if (!griglia) throw new Error('Contenitore della galleria non trovato nella pagina.');
+
+        const matrice = await caricaMatrice();
+        if (matrice.length < 2) throw new Error('Il foglio non contiene righe di dati.');
+
+        const intestazioni = matrice[0].map(normalizzaIntestazione);
+        const indice = Object.fromEntries(intestazioni.map((nome, i) => [nome, i]));
+        const mancanti = Object.values(COLONNE).filter(nome => indice[nome] === undefined);
+        if (mancanti.length) throw new Error(`Mancano le colonne: ${mancanti.join(', ')}.`);
+
+        let edizioni = matrice.slice(1).map(riga => ({
+          edizione: String(riga[indice[COLONNE.EDIZIONE]] || '').trim(),
+          titolo: String(riga[indice[COLONNE.TITOLO]] || '').trim(),
+          sintesi: String(riga[indice[COLONNE.SINTESI]] || '').trim(),
+          copertina: String(riga[indice[COLONNE.COPERTINA]] || '').trim(),
+          accesso: String(riga[indice[COLONNE.ACCESSO]] || '').trim()
+        })).filter(item => item.edizione || item.titolo || item.sintesi || item.copertina || item.accesso);
+
+        if (CONFIG.ORDINA_DAL_PIU_RECENTE) {
+          edizioni = edizioni.map((item, posizione) => ({ ...item, posizione }))
+            .sort((a, b) => (parseInt(b.edizione, 10) || 0) - (parseInt(a.edizione, 10) || 0) || a.posizione - b.posizione);
+        }
+
+        if (!edizioni.length) throw new Error('Non risultano edizioni compilate nel foglio.');
+        griglia.replaceChildren(...edizioni.map(creaCard));
+        griglia.setAttribute('aria-busy', 'false');
+      } catch (errore) {
+        console.error('Errore galleria:', errore);
+        mostraErrore(`Impossibile caricare la galleria. ${errore.message} Verifica che il foglio sia pubblicato sul Web.`);
+      }
+    }
+
+    // Alcuni temi/plugin WordPress spostano gli script nell'header. In quel caso
+    // attendiamo che il blocco HTML della galleria sia presente nel documento.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', caricaGalleria, { once: true });
+    } else {
+      caricaGalleria();
+    }
+  </script>
+</body>
+</html>
