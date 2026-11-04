@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title></title>
+  <title>Galleria LUDiCa</title>
   <style>
     /* =====================================================
        PERSONALIZZAZIONE: modifica qui colori e dimensioni
@@ -97,7 +97,7 @@
     const CONFIG = {
       // URL pubblico del CSV, per esempio un file nel medesimo repository GitHub:
       csvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXzXVD97NxAGmhibLmX3OkOIf7pH7ybu3VmChRQAM5MCaCC3aj-NADoG1cv2yNSL9IUItRzYmcmCyP/pub?gid=398883976&single=true&output=csv',
-      titolo: 'Attrezzature',
+      titolo: 'Galleria LUDiCa',
       elementiPerPagina: 6, // consigliato: 6 (desktop 3x2; mobile 1 colonna)
     };
 
@@ -155,7 +155,7 @@
       riga.push(campo);
       if (riga.some(v => v.trim() !== '')) righe.push(riga);
       if (!righe.length) return [];
-      const intestazioni = righe.shift().map(s => s.trim().toLowerCase());
+      const intestazioni = righe.shift().map(s => s.replace(/\uFEFF/g, '').trim().toLowerCase());
       const richieste = ['nome', 'impiego', 'url', 'immagineurl', 'info'];
       const mancanti = richieste.filter(nome => !intestazioni.includes(nome));
       if (mancanti.length) throw new Error('Colonne CSV mancanti: ' + mancanti.join(', '));
@@ -272,8 +272,12 @@
     async function inizializza() {
       try {
         const risposta = await fetch(CONFIG.csvUrl, { cache: 'no-store' });
-        if (!risposta.ok) throw new Error(`HTTP ${risposta.status}`);
-        dati = parseCSV(await risposta.text());
+        if (!risposta.ok) throw new Error(`Il server CSV ha restituito HTTP ${risposta.status}`);
+        const contenutoCSV = await risposta.text();
+        if (/^\s*<!doctype html|^\s*<html/i.test(contenutoCSV)) {
+          throw new Error('Google ha restituito una pagina HTML anziche il CSV: verifica la pubblicazione del foglio.');
+        }
+        dati = parseCSV(contenutoCSV);
         if (!dati.length) throw new Error('Il CSV non contiene elementi validi.');
         const impieghi = [...new Set(dati.map(item => item.impiego).filter(Boolean))]
           .sort((a, b) => a.localeCompare(b, 'it'));
@@ -289,7 +293,7 @@
         console.error('Errore galleria:', errore);
         elementi.stato.hidden = false;
         elementi.stato.className = 'messaggio errore';
-        elementi.stato.textContent = `Impossibile caricare la galleria. Controlla l'indirizzo del CSV e le intestazioni delle colonne. (${errore.message})`;
+        elementi.stato.textContent = `Impossibile caricare la galleria. ${errore.message}. Verifica che il foglio sia pubblicato sul Web in formato CSV e che il browser permetta la richiesta (CORS).`;
         comunicaAltezza();
       }
     }
