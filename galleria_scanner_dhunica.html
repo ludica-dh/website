@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title></title>
+  <style>
+    /* =====================================================
+       PERSONALIZZAZIONE: modifica qui colori e dimensioni
+       ===================================================== */
+    :root {
+      --sfondo: #f7f8f9;
+      --sfondo-scheda: #ffffff;
+      --testo: #18242d;
+      --testo-secondario: #586773;
+      --accento: #125c68;
+      --accento-hover: #0a4650;
+      --bordo: #dde5e8;
+      --badge-sfondo: #e9f3f3;
+      --badge-testo: #125c68;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --dimensione-titolo-pagina: clamp(1.55rem, 3vw, 2.4rem);
+      --dimensione-nome: 1.18rem;
+      --dimensione-impiego: .79rem;
+      --dimensione-info: .94rem;
+      --dimensione-comandi: .94rem;
+      --altezza-immagine: 235px;
+      --larghezza-minima-scheda: 265px;
+      --raggio-schede: 16px;
+      --spazio-schede: 22px;
+      --larghezza-massima: 1250px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--sfondo); }
+    body { margin: 0; font-family: var(--font); color: var(--testo); background: var(--sfondo); }
+    button, input, select { font: inherit; }
+    .contenitore { max-width: var(--larghezza-massima); margin: 0 auto; padding: 24px 18px 38px; }
+    .intestazione { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; margin: 0 0 22px; }
+    h1 { font-size: var(--dimensione-titolo-pagina); line-height: 1.12; margin: 0; letter-spacing: -.025em; }
+    .conteggio { margin: 0; font-size: .88rem; color: var(--testo-secondario); }
+    .strumenti { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 270px); gap: 12px; margin-bottom: 23px; }
+    .strumenti input, .strumenti select { display: block; width: 100%; min-width: 0; background: white; border: 1px solid var(--bordo); border-radius: 11px; padding: 12px 14px; color: var(--testo); font-size: var(--dimensione-comandi); }
+    .strumenti input:focus-visible, .strumenti select:focus-visible, .pulsante:focus-visible, .paginazione button:focus-visible { outline: 3px solid var(--accento); outline-offset: 2px; }
+    .griglia { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--larghezza-minima-scheda)), 1fr)); gap: var(--spazio-schede); align-items: stretch; }
+    .scheda { background: var(--sfondo-scheda); border: 1px solid var(--bordo); border-radius: var(--raggio-schede); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 6px 24px rgba(16,44,53,.045); min-width: 0; }
+    .copertina { height: var(--altezza-immagine); width: 100%; display: block; object-fit: cover; background: #e5ebed; }
+    .segnaposto { height: var(--altezza-immagine); display: grid; place-items: center; background: #e8eff0; color: #688087; letter-spacing: .08em; font-size: .79rem; }
+    .contenuto { padding: 20px; display: flex; flex-direction: column; flex: 1; align-items: flex-start; }
+    .nome { font-size: var(--dimensione-nome); line-height: 1.3; margin: 0 0 11px; overflow-wrap: anywhere; }
+    .impiego { display: inline-block; border-radius: 999px; background: var(--badge-sfondo); color: var(--badge-testo); font-size: var(--dimensione-impiego); font-weight: 650; padding: 6px 11px; margin-bottom: 14px; overflow-wrap: anywhere; }
+    .info { color: var(--testo-secondario); line-height: 1.6; font-size: var(--dimensione-info); margin: 0 0 21px; overflow-wrap: anywhere; }
+    .pulsante { display: inline-flex; justify-content: center; text-decoration: none; color: white; background: var(--accento); border: 0; border-radius: 10px; padding: 10px 17px; font-weight: 650; font-size: .9rem; margin-top: auto; transition: background .15s ease; }
+    .pulsante:hover { background: var(--accento-hover); }
+    .paginazione { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 28px; }
+    .paginazione button { border-radius: 9px; padding: 9px 13px; background: #fff; border: 1px solid var(--bordo); color: var(--testo); cursor: pointer; }
+    .paginazione button:disabled { opacity: .35; cursor: default; }
+    .paginazione span { color: var(--testo-secondario); font-size: .9rem; }
+    .messaggio { border: 1px solid var(--bordo); border-radius: 12px; padding: 24px; background: white; color: var(--testo-secondario); text-align: center; }
+    .messaggio.errore { color: #9a3333; border-color: #e8c2c2; background: #fff8f8; }
+    [hidden] { display: none !important; }
+    @media (max-width: 580px) {
+      .contenitore { padding: 20px 14px 30px; }
+      .strumenti { grid-template-columns: 1fr; }
+      :root { --altezza-immagine: 220px; --spazio-schede: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="contenitore">
+    <header class="intestazione">
+      <h1 id="titolo">Galleria</h1>
+      <p class="conteggio" id="conteggio" aria-live="polite"></p>
+    </header>
+
+    <div class="strumenti" id="strumenti" hidden>
+      <input id="ricerca" type="search" placeholder="Cerca per nome, impiego o descrizione…" aria-label="Cerca nella galleria">
+      <select id="filtro" aria-label="Filtra per impiego"><option value="">Tutti gli impieghi</option></select>
+    </div>
+
+    <div id="stato" class="messaggio" role="status" aria-live="polite">Caricamento della galleria…</div>
+    <section id="griglia" class="griglia" aria-label="Elementi della galleria" hidden></section>
+
+    <nav id="paginazione" class="paginazione" aria-label="Pagine della galleria" hidden>
+      <button id="precedente" type="button">← Precedente</button>
+      <span id="paginaCorrente" aria-live="polite"></span>
+      <button id="successiva" type="button">Successiva →</button>
+    </nav>
+  </main>
+
+  <script>
+    'use strict';
+    /* =====================================================
+       CONFIGURAZIONE: MODIFICA SOLTANTO QUESTI VALORI
+       ===================================================== */
+    const CONFIG = {
+      // URL pubblico del CSV, per esempio un file nel medesimo repository GitHub:
+      csvUrl: './dati.csv',
+      titolo: 'Galleria LUDiCa',
+      elementiPerPagina: 6, // consigliato: 6 (desktop 3x2; mobile 1 colonna)
+    };
+
+    const elementi = {
+      titolo: document.querySelector('#titolo'),
+      conteggio: document.querySelector('#conteggio'),
+      strumenti: document.querySelector('#strumenti'),
+      ricerca: document.querySelector('#ricerca'),
+      filtro: document.querySelector('#filtro'),
+      stato: document.querySelector('#stato'),
+      griglia: document.querySelector('#griglia'),
+      paginazione: document.querySelector('#paginazione'),
+      precedente: document.querySelector('#precedente'),
+      successiva: document.querySelector('#successiva'),
+      paginaCorrente: document.querySelector('#paginaCorrente'),
+    };
+    let dati = [];
+    let pagina = 1;
+
+    elementi.titolo.textContent = CONFIG.titolo;
+
+    function parseCSV(testo) {
+      // Parsing CSV con virgolette, virgole/punto e virgola, campi su più righe.
+      testo = testo.replace(/^\uFEFF/, '');
+      const primaRiga = testo.split(/\r?\n/, 1)[0];
+      const conta = delimitatore => {
+        let n = 0, quoted = false;
+        for (let i = 0; i < primaRiga.length; i++) {
+          if (primaRiga[i] === '"') {
+            if (quoted && primaRiga[i + 1] === '"') i++;
+            else quoted = !quoted;
+          } else if (!quoted && primaRiga[i] === delimitatore) n++;
+        }
+        return n;
+      };
+      const separatore = conta(';') > conta(',') ? ';' : ',';
+      const righe = [];
+      let riga = [], campo = '', quoted = false;
+      for (let i = 0; i < testo.length; i++) {
+        const c = testo[i];
+        if (c === '"') {
+          if (quoted && testo[i + 1] === '"') { campo += '"'; i++; }
+          else quoted = !quoted;
+        } else if (c === separatore && !quoted) {
+          riga.push(campo); campo = '';
+        } else if ((c === '\n' || c === '\r') && !quoted) {
+          if (c === '\r' && testo[i + 1] === '\n') i++;
+          riga.push(campo); campo = '';
+          if (riga.some(v => v.trim() !== '')) righe.push(riga);
+          riga = [];
+        } else {
+          campo += c;
+        }
+      }
+      riga.push(campo);
+      if (riga.some(v => v.trim() !== '')) righe.push(riga);
+      if (!righe.length) return [];
+      const intestazioni = righe.shift().map(s => s.trim().toLowerCase());
+      const richieste = ['nome', 'impiego', 'url', 'immagineurl', 'info'];
+      const mancanti = richieste.filter(nome => !intestazioni.includes(nome));
+      if (mancanti.length) throw new Error('Colonne CSV mancanti: ' + mancanti.join(', '));
+      return righe.map(colonne => {
+        const oggetto = {};
+        intestazioni.forEach((nome, index) => { oggetto[nome] = (colonne[index] || '').trim(); });
+        return oggetto;
+      }).filter(r => r.nome || r.impiego || r.info || r.immagineurl);
+    }
+
+    function urlSicuro(valore) {
+      if (!valore) return '';
+      try {
+        const url = new URL(valore, new URL(CONFIG.csvUrl, location.href));
+        return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+      } catch { return ''; }
+    }
+
+    function creaScheda(item) {
+      const card = document.createElement('article');
+      card.className = 'scheda';
+      const immagine = urlSicuro(item.immagineurl);
+      let copertina;
+      if (immagine) {
+        copertina = document.createElement('img');
+        copertina.className = 'copertina';
+        copertina.src = immagine;
+        copertina.alt = item.nome ? 'Immagine di ' + item.nome : 'Immagine di anteprima';
+        copertina.loading = 'lazy';
+        copertina.decoding = 'async';
+        copertina.onerror = () => copertina.replaceWith(creaSegnaposto());
+      } else copertina = creaSegnaposto();
+      card.append(copertina);
+
+      const contenuto = document.createElement('div');
+      contenuto.className = 'contenuto';
+      const titolo = document.createElement('h2');
+      titolo.className = 'nome';
+      titolo.textContent = item.nome || 'Senza nome';
+      contenuto.append(titolo);
+      if (item.impiego) {
+        const badge = document.createElement('span');
+        badge.className = 'impiego';
+        badge.textContent = item.impiego;
+        contenuto.append(badge);
+      }
+      if (item.info) {
+        const p = document.createElement('p');
+        p.className = 'info';
+        p.textContent = item.info;
+        contenuto.append(p);
+      }
+      const link = urlSicuro(item.url);
+      if (link) {
+        const a = document.createElement('a');
+        a.className = 'pulsante';
+        a.href = link;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = 'Approfondisci ↗';
+        a.setAttribute('aria-label', 'Approfondisci: ' + (item.nome || 'elemento'));
+        contenuto.append(a);
+      }
+      card.append(contenuto);
+      return card;
+    }
+
+    function creaSegnaposto() {
+      const div = document.createElement('div');
+      div.className = 'segnaposto';
+      div.textContent = 'IMMAGINE NON DISPONIBILE';
+      return div;
+    }
+
+    function render() {
+      const ricerca = elementi.ricerca.value.toLocaleLowerCase('it').trim();
+      const filtro = elementi.filtro.value;
+      const risultati = dati.filter(item => {
+        const testo = [item.nome, item.impiego, item.info].join(' ').toLocaleLowerCase('it');
+        return (!ricerca || testo.includes(ricerca)) && (!filtro || item.impiego === filtro);
+      });
+      const perPagina = Math.max(1, Number.parseInt(CONFIG.elementiPerPagina, 10) || 6);
+      const pagine = Math.max(1, Math.ceil(risultati.length / perPagina));
+      pagina = Math.min(pagina, pagine);
+      const visibili = risultati.slice((pagina - 1) * perPagina, pagina * perPagina);
+      elementi.griglia.replaceChildren(...visibili.map(creaScheda));
+      elementi.conteggio.textContent = `${risultati.length} ${risultati.length === 1 ? 'elemento' : 'elementi'}`;
+      elementi.griglia.hidden = risultati.length === 0;
+      elementi.stato.hidden = risultati.length !== 0;
+      if (!risultati.length) {
+        elementi.stato.className = 'messaggio';
+        elementi.stato.textContent = 'Nessun elemento corrisponde ai filtri selezionati.';
+      }
+      elementi.paginazione.hidden = pagine <= 1 || risultati.length === 0;
+      elementi.paginaCorrente.textContent = `Pagina ${pagina} di ${pagine}`;
+      elementi.precedente.disabled = pagina === 1;
+      elementi.successiva.disabled = pagina === pagine;
+      comunicaAltezza();
+    }
+
+    // Se il sito WordPress usa un listener postMessage, può ridimensionare l'iframe.
+    // Il layout funziona comunque anche senza listener.
+    function comunicaAltezza() {
+      requestAnimationFrame(() => {
+        const altezza = Math.ceil(document.documentElement.scrollHeight);
+        window.parent.postMessage({ tipo: 'ludica-galleria-altezza', altezza }, '*');
+      });
+    }
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(comunicaAltezza).observe(document.body);
+    }
+    window.addEventListener('load', comunicaAltezza);
+
+    async function inizializza() {
+      try {
+        const risposta = await fetch(CONFIG.csvUrl, { cache: 'no-store' });
+        if (!risposta.ok) throw new Error(`HTTP ${risposta.status}`);
+        dati = parseCSV(await risposta.text());
+        if (!dati.length) throw new Error('Il CSV non contiene elementi validi.');
+        const impieghi = [...new Set(dati.map(item => item.impiego).filter(Boolean))]
+          .sort((a, b) => a.localeCompare(b, 'it'));
+        for (const impiego of impieghi) {
+          const option = document.createElement('option');
+          option.value = impiego;
+          option.textContent = impiego;
+          elementi.filtro.append(option);
+        }
+        elementi.strumenti.hidden = false;
+        render();
+      } catch (errore) {
+        console.error('Errore galleria:', errore);
+        elementi.stato.hidden = false;
+        elementi.stato.className = 'messaggio errore';
+        elementi.stato.textContent = `Impossibile caricare la galleria. Controlla l'indirizzo del CSV e le intestazioni delle colonne. (${errore.message})`;
+        comunicaAltezza();
+      }
+    }
+
+    elementi.ricerca.addEventListener('input', () => { pagina = 1; render(); });
+    elementi.filtro.addEventListener('change', () => { pagina = 1; render(); });
+    elementi.precedente.addEventListener('click', () => { if (pagina > 1) { pagina--; render(); } });
+    elementi.successiva.addEventListener('click', () => { pagina++; render(); });
+    inizializza();
+  </script>
+</body>
+</html>
