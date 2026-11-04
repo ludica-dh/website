@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Galleria LUDiCa</title>
+  <title></title>
   <style>
     /* =====================================================
        PERSONALIZZAZIONE: modifica qui colori e dimensioni
@@ -75,7 +75,7 @@
     </header>
 
     <div class="strumenti" id="strumenti" hidden>
-      <input id="ricerca" type="search" placeholder="Cerca per nome, impiego o descrizione…" aria-label="Cerca nella galleria">
+      <input id="ricerca" type="search" placeholder="Cerca per nome o impiego…" aria-label="Cerca nella galleria">
       <select id="filtro" aria-label="Filtra per impiego"><option value="">Tutti gli impieghi</option></select>
     </div>
 
@@ -95,7 +95,7 @@
        CONFIGURAZIONE: MODIFICA SOLTANTO QUESTI VALORI
        ===================================================== */
     const CONFIG = {
-      // URL pubblico del CSV, per esempio un file nel medesimo repository GitHub:
+      // URL del foglio Google pubblicato come CSV:
       csvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXzXVD97NxAGmhibLmX3OkOIf7pH7ybu3VmChRQAM5MCaCC3aj-NADoG1cv2yNSL9IUItRzYmcmCyP/pub?gid=398883976&single=true&output=csv',
       titolo: 'Galleria LUDiCa',
       elementiPerPagina: 6, // consigliato: 6 (desktop 3x2; mobile 1 colonna)
@@ -155,15 +155,15 @@
       riga.push(campo);
       if (riga.some(v => v.trim() !== '')) righe.push(riga);
       if (!righe.length) return [];
-      const intestazioni = righe.shift().map(s => s.replace(/\uFEFF/g, '').trim().toLowerCase());
-      const richieste = ['nome', 'impiego', 'url', 'immagineurl', 'info'];
+      const intestazioni = righe.shift().map(s => s.replace(/\uFEFF/g, '').trim().toLowerCase().replace(/\s+/g, ' '));
+      const richieste = ['nome', 'impiego', 'url immagine', 'url info'];
       const mancanti = richieste.filter(nome => !intestazioni.includes(nome));
       if (mancanti.length) throw new Error('Colonne CSV mancanti: ' + mancanti.join(', '));
       return righe.map(colonne => {
         const oggetto = {};
         intestazioni.forEach((nome, index) => { oggetto[nome] = (colonne[index] || '').trim(); });
-        return oggetto;
-      }).filter(r => r.nome || r.impiego || r.info || r.immagineurl);
+        return { nome: oggetto['nome'] || '', impiego: oggetto['impiego'] || '', immagineurl: oggetto['url immagine'] || '', url: oggetto['url info'] || '', info: '' };
+      }).filter(r => r.nome || r.impiego || r.immagineurl || r.url);
     }
 
     function urlSicuro(valore) {
@@ -293,7 +293,7 @@
         console.error('Errore galleria:', errore);
         elementi.stato.hidden = false;
         elementi.stato.className = 'messaggio errore';
-        elementi.stato.textContent = `Impossibile caricare la galleria. ${errore.message}. Verifica che il foglio sia pubblicato sul Web in formato CSV e che il browser permetta la richiesta (CORS).`;
+        elementi.stato.textContent = `Impossibile caricare la galleria. ${errore.message}. Controlla che il foglio sia pubblicato sul Web in formato CSV e che le intestazioni corrispondano a NOME, IMPIEGO, URL immagine, url info.`;
         comunicaAltezza();
       }
     }
