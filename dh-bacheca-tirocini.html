@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bacheca TIROCINI · DH UNICA</title>
+<style>
+:root{color-scheme:light;--ink:#18352f;--muted:#52675f;--line:#dbe4df;--green:#14644f;--paper:#fff;--bg:#f3f6f3}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1160px;margin:auto;padding:32px 24px}.eyebrow{font-size:12px;font-weight:750;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}h1{font-size:clamp(28px,5vw,42px);line-height:1.15;letter-spacing:-.035em;margin:10px 0}header p{color:var(--muted);margin:12px 0 24px;max-width:650px}.toolbar{display:grid;grid-template-columns:minmax(180px,1fr) minmax(150px,240px) auto;gap:16px;align-items:end;background:white;border:1px solid var(--line);border-radius:16px;padding:20px}label{display:block;font-size:13px;font-weight:650;margin-bottom:7px}input,select,button{font:inherit;border-radius:8px;border:1px solid #b6c8bd;padding:11px 12px;min-height:46px}input,select{width:100%;background:white;color:var(--ink)}button{background:var(--green);color:white;cursor:pointer;font-weight:650}button.secondary{background:white;color:var(--green)}button:disabled{opacity:.5;cursor:default}:focus-visible{outline:3px solid #c18232;outline-offset:3px}.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin:20px 0 12px;font-size:13px;color:var(--muted)}.notice{border-left:4px solid #bf8337;background:#fff6e8;padding:12px 16px;margin:18px 0;border-radius:6px;font-size:14px}.notice[hidden]{display:none}.table-wrap{background:white;border:1px solid var(--line);border-radius:14px;overflow:auto}table{width:100%;border-collapse:collapse;text-align:left}caption{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#edf3ee;padding:15px 18px;white-space:nowrap}td{padding:20px 18px;border-top:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}td:first-child{font-weight:650;min-width:200px;width:40%}td a{display:inline-block;color:var(--green);font-size:14px;font-weight:650;text-underline-offset:4px}.tag{display:inline-block;background:#eaf3ed;border-radius:5px;padding:3px 9px;font-size:12px;font-weight:600}.empty{text-align:center!important;padding:40px!important;font-weight:400!important}nav{display:flex;align-items:center;justify-content:flex-end;gap:14px;margin-top:20px;font-size:14px}footer{margin-top:24px;color:var(--muted);font-size:12px}a{color:var(--green)}@media(max-width:640px){main{padding:24px 14px}.toolbar{grid-template-columns:1fr;padding:16px;gap:12px}thead{display:none}table,tbody,tr,td{display:block}tr+tr{border-top:1px solid var(--line)}td{border:0;padding:6px 16px}td:first-child{width:100%;padding-top:18px}td:last-child{padding-bottom:18px}td[data-label]::before{content:attr(data-label) ': ';font-size:12px;font-weight:500;color:var(--muted)}td.empty::before{content:none}nav{justify-content:center}}
+</style>
+</head>
+<body>
+<main>
+<header><span class="eyebrow">DH UNICA · Bacheca</span><h1>Opportunità e segnalazioni</h1><p>Esplora le proposte, seleziona un ambito e consulta le informazioni per partecipare.</p></header>
+<div class="toolbar" role="search" aria-label="Cerca e filtra le proposte">
+<div><label for="search">Cerca un’opportunità</label><input id="search" type="search" placeholder="Titolo, ambito o parola chiave…" autocomplete="off"></div>
+<div><label for="scope">Ambito</label><select id="scope"><option value="">Tutti gli ambiti</option></select></div>
+<button id="reset" class="secondary" type="button">Azzera filtri</button>
+</div>
+<div id="notice" class="notice" role="status" hidden></div>
+<div class="meta"><span id="count" role="status" aria-live="polite">Caricamento…</span><span><span id="updated"></span> <button id="refresh" class="secondary" type="button">Aggiorna</button></span></div>
+<div class="table-wrap"><table><caption>Proposte dal foglio di calcolo</caption><thead><tr><th scope="col">Titolo</th><th scope="col">Info</th><th scope="col">Ambito</th><th scope="col">Aperto il</th><th scope="col">A</th></tr></thead><tbody id="rows"></tbody></table></div>
+<nav aria-label="Paginazione"><button id="prev" class="secondary" type="button">Precedente</button><span id="page"></span><button id="next" class="secondary" type="button">Successiva</button></nav>
+<footer>I contenuti sono gestiti nel foglio di origine. Le informazioni si aprono in una nuova scheda.</footer>
+</main>
+<script>
+'use strict';
+// CONFIGURAZIONE: incolla l’URL del singolo foglio pubblicato sul web in formato CSV.
+// Esempio: https://docs.google.com/spreadsheets/d/e/ID_PUBBLICAZIONE/pub?gid=0&single=true&output=csv
+const CONFIG = {
+  csvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXzXVD97NxAGmhibLmX3OkOIf7pH7ybu3VmChRQAM5MCaCC3aj-NADoG1cv2yNSL9IUItRzYmcmCyP/pub?gid=1690752781&single=true&output=csv',
+  pageSize: 20,
+  refreshMinutes: 5
+};
+// Le colonne vengono riconosciute dalle intestazioni, indipendentemente dall’ordine.
+const HEADERS = ['Titolo','url info','ambito','aperto il','a'];
+function normalize(value){return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ');}
+function parseCSV(text){
+  text=text.replace(/^\uFEFF/,'');
+  const rows=[];let row=[],field='',quoted=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(c==='"'){
+      if(quoted&&text[i+1]==='"'){field+='"';i++;}
+      else if(quoted){quoted=false;}
+      else if(field===''){quoted=true;}
+      else{field+=c;}
+    }else if(c===','&&!quoted){row.push(field);field='';}
+    else if((c==='\n'||c==='\r')&&!quoted){
+      if(c==='\r'&&text[i+1]==='\n')i++;
+      row.push(field);rows.push(row);row=[];field='';
+    }else field+=c;
+  }
+  if(quoted)throw new Error('CSV non valido: virgolette non chiuse.');
+  if(field!==''||row.length){row.push(field);rows.push(row);}
+  return rows.filter(r=>r.some(v=>v.trim()!==''));
+}
+function recordsFromCSV(text){
+  const rows=parseCSV(text);if(!rows.length)throw new Error('Il foglio è vuoto.');
+  const headers=rows.shift().map(normalize);
+  for(const h of HEADERS){if(!headers.includes(normalize(h)))throw new Error('Colonna mancante: '+h);if(headers.filter(x=>x===normalize(h)).length>1)throw new Error('Intestazione duplicata: '+h);}
+  const indices=HEADERS.map(h=>headers.indexOf(normalize(h)));
+  return rows.map(row=>{
+    const values=indices.map(i=>(row[i]||'').trim());
+    return {title:values[0],url:values[1],scope:values[2],opened:values[3],to:values[4],search:normalize(values.join(' '))};
+  }).filter(item=>item.title);
+}
+function safeURL(value){try{const url=new URL(value);return ['https:','http:'].includes(url.protocol)?url.href:null;}catch{return null;}}
+if(typeof document!=='undefined'){
+  const $=id=>document.getElementById(id);
+  let data=[],filtered=[],page=1,loading=false,loaded=false;
+  function notice(message){$('notice').textContent=message;$('notice').hidden=!message;}
+  function apply(){const query=normalize($('search').value),scope=$('scope').value;filtered=data.filter(x=>(!query||x.search.includes(query))&&(!scope||x.scope===scope));page=1;render();}
+  function render(){
+    const pages=Math.max(1,Math.ceil(filtered.length/CONFIG.pageSize));page=Math.min(page,pages);
+    const fragment=document.createDocumentFragment();
+    for(const item of filtered.slice((page-1)*CONFIG.pageSize,page*CONFIG.pageSize)){
+      const tr=document.createElement('tr');
+      for(const [label,value] of [['Titolo',item.title],['Info',item.url],['Ambito',item.scope],['Aperto il',item.opened],['A',item.to]]){
+        const td=document.createElement('td');td.dataset.label=label;
+        if(label==='Info'){
+          const url=safeURL(value);
+          if(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Vai alle informazioni ↗';a.setAttribute('aria-label','Informazioni su '+item.title+' (nuova scheda)');td.append(a);}else td.textContent=value?'Link non disponibile':'—';
+        }else if(label==='Ambito'&&value){const span=document.createElement('span');span.className='tag';span.textContent=value;td.append(span);}
+        else td.textContent=value||'—';
+        tr.append(td);
+      }fragment.append(tr);
+    }
+    if(!filtered.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=5;td.className='empty';td.textContent=data.length?'Nessuna proposta corrisponde ai filtri.':'Nessuna proposta disponibile.';tr.append(td);fragment.append(tr);}
+    $('rows').replaceChildren(fragment);$('count').textContent=filtered.length+' proposte'+(filtered.length!==data.length?' su '+data.length:'');
+    $('page').textContent='Pagina '+page+' di '+pages;$('prev').disabled=page<=1;$('next').disabled=page>=pages;
+  }
+  function setData(items){
+    data=items;const previous=$('scope').value;$('scope').replaceChildren(new Option('Tutti gli ambiti',''));
+    [...new Set(data.map(x=>x.scope).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'it')).forEach(value=>$('scope').add(new Option(value,value)));
+    if([...$('scope').options].some(x=>x.value===previous))$('scope').value=previous;
+    loaded=true;apply();
+  }
+  async function load(){
+    if(loading)return;
+    if(!CONFIG.csvUrl){
+      setData(recordsFromCSV('Titolo,url info,ambito,aperto il,a\nEsempio: tirocinio in patrimonio digitale,https://storia.dh.unica.it/,Digital Humanities,01/11/2026,30/11/2026\nEsempio: laboratorio di storia pubblica,,Public History,05/11/2026,15/12/2026'));
+      notice('ANTEPRIMA DIMOSTRATIVA — Queste proposte sono esempi. Inserisci l’URL CSV del tuo foglio in CONFIG.csvUrl per mostrare i tuoi dati.');return;
+    }
+    loading=true;$('refresh').disabled=true;$('refresh').textContent='Caricamento…';
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000);
+    try{
+      const url=new URL(CONFIG.csvUrl);
+      if(url.protocol!=='https:'||url.hostname!=='docs.google.com')throw new Error('Usa un URL HTTPS CSV pubblicato da docs.google.com.');
+      const response=await fetch(url.href,{signal:controller.signal,cache:'no-store',credentials:'omit'});
+      if(!response.ok)throw new Error('Errore di caricamento (HTTP '+response.status+').');
+      const text=await response.text();if(/^\s*</.test(text))throw new Error('Il link restituisce una pagina HTML: verifica la pubblicazione in formato CSV.');
+      setData(recordsFromCSV(text));notice('');$('updated').textContent='Lettura dati: '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    }catch(error){
+      notice((loaded?'Aggiornamento non riuscito; restano visibili gli ultimi dati caricati. ':'Impossibile caricare i dati. ')+(error.name==='AbortError'?'Tempo di attesa scaduto.':error.message)+' Verifica URL, connessione e pubblicazione del foglio in CSV.');
+      if(!loaded){$('rows').replaceChildren();$('count').textContent='Dati non disponibili';$('page').textContent='';$('prev').disabled=true;$('next').disabled=true;}
+    }finally{clearTimeout(timeout);loading=false;$('refresh').disabled=false;$('refresh').textContent='Aggiorna';}
+  }
+  let debounce;$('search').addEventListener('input',()=>{clearTimeout(debounce);debounce=setTimeout(apply,150);});
+  $('scope').addEventListener('change',apply);$('reset').addEventListener('click',()=>{$('search').value='';$('scope').value='';apply();});
+  $('prev').addEventListener('click',()=>{page--;render();});$('next').addEventListener('click',()=>{page++;render();});$('refresh').addEventListener('click',load);
+  $('prev').disabled=true;$('next').disabled=true;load();
+  setInterval(()=>{if(CONFIG.csvUrl&&!document.hidden)load();},CONFIG.refreshMinutes*60000);
+}
+</script>
+</body>
+</html>
