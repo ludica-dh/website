@@ -200,14 +200,14 @@ body { padding:0; }
    URL dell'immagine e link di accesso: EDIZIONE_ATTUALE a fondo pagina.
    ============================================================== */
 .ludica-filiera {
-  --lf-edition-bg:#244b41;
-  --lf-edition-bg-light:#376455;
-  --lf-edition-text:#fffdf8;
-  --lf-edition-highlight:#f4dc73;
+  --lf-edition-bg:var(--lf-method);
+  --lf-edition-bg-light:var(--lf-method);
+  --lf-edition-text:var(--lf-ink);
+  --lf-edition-highlight:var(--lf-paper);
   --lf-edition-title:clamp(2rem,4.8vw,3.8rem);
   --lf-edition-radius:20px;
   --lf-edition-image-ratio:4/3; /* MODIFICA QUI: proporzioni del riquadro immagine */
-  --lf-edition-image-fit:cover; /* cover = ritaglio uniforme; contain = immagine intera */
+  --lf-edition-image-fit:contain; /* contain = immagine intera; cover = riempimento con ritaglio */
 }
 .ludica-filiera .lf-current-edition {
   position:relative;overflow:hidden;isolation:isolate;
@@ -222,31 +222,31 @@ body { padding:0; }
 .ludica-filiera .lf-current-edition[data-clickable="true"] {cursor:pointer}
 @media(hover:hover) {
   .ludica-filiera .lf-current-edition[data-clickable="true"]:hover{transform:translateY(-2px);box-shadow:0 14px 28px #203b352c}
-  .ludica-filiera .lf-current-edition[data-clickable="true"]:hover .lf-current-link{background:#fff0a7}
+  .ludica-filiera .lf-current-edition[data-clickable="true"]:hover .lf-current-link{background:#ffffff}
 }
 .ludica-filiera .lf-current-edition:focus-within{outline:3px solid var(--lf-edition-highlight);outline-offset:3px}
 .ludica-filiera .lf-current-edition :is(h2,p){margin:0;color:inherit}
 .ludica-filiera .lf-current-edition .lf-current-label{
   display:inline-flex;align-items:center;gap:9px;
-  padding:7px 13px;border:1px solid #ffffff6b;border-radius:999px;
+  padding:7px 13px;border:1px solid var(--lf-border);border-radius:999px;
   font-size:var(--lf-small);font-weight:750;letter-spacing:.09em;
 }
 .ludica-filiera .lf-current-label::before {
   content:"";display:block;width:9px;height:9px;border-radius:50%;
-  background:var(--lf-edition-highlight);box-shadow:0 0 0 4px #f4dc732a;
+  background:var(--lf-dark);box-shadow:0 0 0 4px #244b4120;
 }
 .ludica-filiera .lf-current-edition h2 {
   margin:18px 0 12px;font-size:var(--lf-edition-title);line-height:1.1;
   letter-spacing:-.035em;max-width:740px;
 }
 .ludica-filiera .lf-current-edition .lf-current-text {
-  max-width:620px;font-size:var(--lf-lead);line-height:1.6;opacity:.95;
+  max-width:620px;font-size:var(--lf-lead);line-height:1.6;color:var(--lf-muted);
 }
-.ludica-filiera .lf-current-meta {font-size:var(--lf-small);margin-top:16px;opacity:.85}
+.ludica-filiera .lf-current-meta {font-size:var(--lf-small);margin-top:16px;color:var(--lf-muted)}
 .ludica-filiera .lf-current-edition .lf-current-link {
   display:inline-flex;align-items:center;justify-content:center;
   min-height:46px;margin-top:22px;padding:12px 21px;border-radius:100px;
-  background:var(--lf-edition-highlight);color:#203b35;
+  background:var(--lf-paper);color:var(--lf-ink);border:1px solid var(--lf-border);
   font-size:var(--lf-small);font-weight:750;text-decoration:none;
   pointer-events:none; /* il link trasparente sopra la scheda gestisce il clic */
 }
@@ -262,11 +262,11 @@ body { padding:0; }
 }
 .ludica-filiera .lf-current-cover-placeholder {
   text-align:center;display:grid;gap:10px;place-items:center;
-  padding:20px;color:#fffdf8c9;font-size:var(--lf-small);letter-spacing:.06em;
+  padding:20px;color:var(--lf-muted);font-size:var(--lf-small);letter-spacing:.06em;
 }
 .ludica-filiera .lf-current-cover-placeholder strong {
   font:400 clamp(3.5rem,8vw,6rem)/1 var(--lf-heading);
-  color:var(--lf-edition-highlight);
+  color:var(--lf-dark);
 }
 /* Il collegamento e' esteso a tutta la scheda, inclusa l'immagine. */
 .ludica-filiera .lf-current-overlay-link {
@@ -297,11 +297,11 @@ body { padding:0; }
   <div class="lf-current-cover" data-edition-cover>
     <div class="lf-current-cover-placeholder" data-edition-placeholder aria-hidden="true">
       <strong data-edition-year>2026</strong>
-      <span>IMMAGINE DELL'EDIZIONE</span>
+      <span data-edition-image-status>IMMAGINE DELL'EDIZIONE</span>
     </div>
     <img data-edition-image alt="Copertina dell'edizione LUDiCa 2026 a Chiaramonti" loading="lazy" hidden>
   </div>
-  <a class="lf-current-overlay-link" data-edition-url href="https://ludica.dh.unica.it/2026/09/23/ludica-2026-al-via-le-iscrizioni-alla-scuola-aiph-di-storia-digitale-e-pubblica/" target="_blank" rel="noopener noreferrer" aria-label="Scopri l'edizione LUDiCa 2026 (si apre in una nuova scheda)"></a>
+  <a class="lf-current-overlay-link" data-edition-url href="https://ludica.dh.unica.it/laboratorio/ludica-26-scuola-di-storia-digitale-e-pubblica/" target="_blank" rel="noopener noreferrer" aria-label="Scopri l'edizione LUDiCa 2026 (si apre in una nuova scheda)"></a>
 </section>
 
 <section class="lf-resources" aria-label="Esplora il laboratorio"><p class="lf-kicker">ESPLORA IL LABORATORIO</p><div class="lf-resource-grid"><details class="lf-resource"><summary><svg class="lf-resource-icon" viewbox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M8 5h8v25H8z M25 5h7v25h-7z M25 11h4 M25 17h4 M25 23h4"></path></svg><span class="lf-resource-title">Bottega digitale</span><span class="lf-resource-subtitle">Cos’è e come funziona</span><span class="lf-resource-toggle" aria-hidden="true">+</span></summary><div class="lf-resource-body"><p>La Bottega digitale prepara al lavoro sulle fonti: confronto metodologico, esercitazioni e uso degli strumenti precedono e accompagnano la ricerca sul campo.</p><a class="lf-link lf-resource-link" data-lf-link="bottega_digitale" hidden="" target="_blank" rel="noopener noreferrer">Approfondisci ↗</a><p class="lf-caption lf-resource-pending" data-lf-pending="bottega_digitale">Approfondimento in preparazione.</p></div></details><details class="lf-resource"><summary><svg class="lf-resource-icon" viewbox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M20 34S8 21 8 14a12 12 0 0 1 24 0c0 7-12 20-12 20Z M25 14a5 5 0 1 1-10 0a5 5 0 1 1 10 0"></path></svg><span class="lf-resource-title">Campi residenziali</span><span class="lf-resource-subtitle">Cosa sono e come funzionano</span><span class="lf-resource-toggle" aria-hidden="true">+</span></summary><div class="lf-resource-body"><p>I campi residenziali portano la ricerca nel territorio. Docenti e studenti lavorano con le comunità, raccolgono e interpretano le fonti e condividono pubblicamente i risultati.</p><a class="lf-link lf-resource-link" data-lf-link="campi_estivi" hidden="" target="_blank" rel="noopener noreferrer">Approfondisci ↗</a><p class="lf-caption lf-resource-pending" data-lf-pending="campi_estivi">Approfondimento in preparazione.</p></div></details><details class="lf-resource"><summary><svg class="lf-resource-icon" viewbox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M4 7h9v25H4z M15 7h9v25h-9z M26 7h9v25h-9z M7 13h3 M18 13h3 M29 13h3 M7 18h3 M18 18h3 M29 18h3"></path></svg><span class="lf-resource-title">Archivio edizioni</span><span class="lf-resource-subtitle">Le edizioni dal 2019 a oggi</span><span class="lf-resource-toggle" aria-hidden="true">+</span></summary><div class="lf-resource-body"><p>Uno spazio per consultare i dettagli delle diverse edizioni: temi, luoghi e percorsi del laboratorio, dal 2019 a oggi.</p><a class="lf-link lf-resource-link" data-lf-link="archivio_edizioni" hidden="" target="_blank" rel="noopener noreferrer">Approfondisci ↗</a><p class="lf-caption lf-resource-pending" data-lf-pending="archivio_edizioni">Approfondimento in preparazione.</p></div></details><details class="lf-resource"><summary><svg class="lf-resource-icon" viewbox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M6 29L28 7l5 5L11 34H6z M25 10l5 5 M13 27l4 4"></path></svg><span class="lf-resource-title">Flusso di lavoro</span><span class="lf-resource-subtitle">Come e cosa facciamo</span><span class="lf-resource-toggle" aria-hidden="true">+</span></summary><div class="lf-resource-body"><p>Il laboratorio intreccia azioni metodologiche, metodiche e computazionali: dalla domanda di ricerca alla dematerializzazione, dalla descrizione delle fonti alla loro interpretazione e restituzione.</p><a class="lf-link lf-resource-link" data-lf-link="flusso_lavoro" hidden="" target="_blank" rel="noopener noreferrer">Approfondisci ↗</a><p class="lf-caption lf-resource-pending" data-lf-pending="flusso_lavoro">Approfondimento in preparazione.</p></div></details><details class="lf-resource"><summary><svg class="lf-resource-icon" viewbox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M10 5h21v30H10z M6 11h8 M6 29h8 M16 12h10 M16 17h10 M16 22h7"></path></svg><span class="lf-resource-title">Pubblicazioni</span><span class="lf-resource-subtitle">Portali web e Quaderni del LUDiCa</span><span class="lf-resource-toggle" aria-hidden="true">+</span></summary><div class="lf-resource-body"><p>I portali web rendono consultabili fonti, schede, mappe e racconti delle edizioni. I Quaderni del LUDiCa raccolgono riflessioni critiche sulle esperienze e sul metodo storico.</p><a class="lf-link lf-resource-link" data-lf-link="pubblicazioni" hidden="" target="_blank" rel="noopener noreferrer">Approfondisci ↗</a><p class="lf-caption lf-resource-pending" data-lf-pending="pubblicazioni">Approfondimento in preparazione.</p></div></details><details class="lf-resource"><summary><svg class="lf-resource-icon" viewbox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M6 5v29h29 M10 27l7-9 8 4 9-14 M10 11l7 4 8-5 9 13"></path></svg><span class="lf-resource-title">LUDiCa in numeri</span><span class="lf-resource-subtitle">Numeri e luoghi del laboratorio</span><span class="lf-resource-toggle" aria-hidden="true">+</span></summary><div class="lf-resource-body"><p>Una lettura d’insieme di luoghi, partecipazione, attività ed esiti del laboratorio, attraverso dati e rappresentazioni dedicati.</p><a class="lf-link lf-resource-link" data-lf-link="ludica_numeri" hidden="" target="_blank" rel="noopener noreferrer">Approfondisci ↗</a><p class="lf-caption lf-resource-pending" data-lf-pending="ludica_numeri">Approfondimento in preparazione.</p></div></details></div></section><div class="lf-toolbar"><p><strong>Quattro livelli, un unico laboratorio.</strong><br><span>Apri un piano e segui le sue ramificazioni.</span></p><button type="button" class="lf-expand-all" hidden>Esplodi tutti i livelli <span aria-hidden="true">↗</span></button></div>
@@ -665,15 +665,15 @@ body { padding:0; }
   const EDIZIONE_ATTUALE = {
     etichetta: "EDIZIONE IN CORSO",
     anno: "2026",
-    titolo: "Chiaramonti 2026",
+    titolo: "LUDiCa 2026",
     descrizione: "Un laboratorio di ricerca condivisa dedicato alle storie, alle fonti e alla memoria viva della comunità di Chiaramonti.",
-    dettagli: "LUDiCa · Edizione 2026",
+    dettagli: "Scuola di Storia digitale e pubblica AIPH",
 
     // 1. LINK DI ACCESSO - MODIFICA QUI
     urlEdizione: "https://ludica.dh.unica.it/2026/09/23/ludica-2026-al-via-le-iscrizioni-alla-scuola-aiph-di-storia-digitale-e-pubblica/",
 
     // 2. IMMAGINE DI COPERTINA - MODIFICA QUI (es. https://tuosito.it/foto.jpg)
-    urlImmagine: "https://ludica.dh.unica.it/wp-content/uploads/sites/9/2026/09/Ludica_2026_CHIARAMONTI_verticale-scaled.jpg",
+    urlImmagine: "https://ludica.dh.unica.it/wp-content/uploads/sites/9/2026/09/LUDICA_25.png",
 
     testoPulsante: "Scopri l'edizione ↗"
   };
@@ -717,8 +717,14 @@ body { padding:0; }
     const placeholder = area.querySelector('[data-edition-placeholder]');
     const imageAddress = urlWeb(EDIZIONE_ATTUALE.urlImmagine);
     img.alt = 'Copertina di ' + EDIZIONE_ATTUALE.titolo;
+    const imageStatus = area.querySelector('[data-edition-image-status]');
     img.onload = () => { img.hidden = false; placeholder.hidden = true; };
-    img.onerror = () => { img.hidden = true; placeholder.hidden = false; };
+    img.onerror = () => {
+      img.hidden = true;
+      placeholder.hidden = false;
+      if (imageStatus) imageStatus.textContent = 'Immagine non disponibile: controlla l’URL pubblico nel codice.';
+      console.warn('LUDiCa: impossibile caricare la copertina:', imageAddress);
+    };
     if (imageAddress) {
       img.hidden = true;
       placeholder.hidden = false;
