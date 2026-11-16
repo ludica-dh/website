@@ -260,7 +260,10 @@ body { padding:0; }
   width:100%;height:100%;position:absolute;inset:0;
   display:block;object-fit:var(--lf-edition-image-fit);
   background:var(--lf-paper);
+  opacity:0; /* visibile solo al termine del caricamento */
+  transition:opacity .16s ease;
 }
+.ludica-filiera .lf-current-cover img.lf-image-loaded {opacity:1}
 .ludica-filiera .lf-current-cover-placeholder {
   text-align:center;display:grid;gap:10px;place-items:center;
   padding:20px;color:var(--lf-muted);font-size:var(--lf-small);letter-spacing:.06em;
@@ -300,8 +303,8 @@ body { padding:0; }
   <div class="lf-current-content">
     <span class="lf-current-label" data-edition-label>EDIZIONE IN CORSO</span>
     <h2 id="lf-current-title" data-edition-title>LUDiCa 2026</h2>
-    <p class="lf-current-text" data-edition-text>Un laboratorio di ricerca condivisa dedicato alle storie, alle fonti e alla memoria viva della comunità di Chiaramonti.</p>
-    <p class="lf-current-meta" data-edition-meta>LUDiCa · Edizione 2026</p>
+    <p class="lf-current-text" data-edition-text>Il laboratorio della'Università di Cagliari che impiega strumenti e metodi DH alle storie, alle fonti e alla memoria della comunità di Chiaramonti.</p>
+    <p class="lf-current-meta" data-edition-meta>Scuola di Storia Digitale e Pubblica AIPH</p>
     <span class="lf-current-link" data-edition-button>Scopri l'edizione ↗</span>
   </div>
   <div class="lf-current-cover" data-edition-cover>
@@ -309,7 +312,7 @@ body { padding:0; }
       <strong data-edition-year>2026</strong>
       <span data-edition-image-status>IMMAGINE DELL'EDIZIONE</span>
     </div>
-    <img data-edition-image alt="Copertina dell'edizione LUDiCa 2026 a Chiaramonti" loading="lazy" hidden>
+    <img data-edition-image alt="Copertina dell'edizione LUDiCa 2026 a Chiaramonti" loading="eager" decoding="async">
     <span class="lf-cover-error" data-edition-image-status hidden role="status"></span>
   </div>
   <a class="lf-current-overlay-link" data-edition-url href="https://ludica.dh.unica.it/laboratorio/ludica-26-scuola-di-storia-digitale-e-pubblica/" target="_blank" rel="noopener noreferrer" aria-label="Scopri l'edizione LUDiCa 2026 (si apre in una nuova scheda)"></a>
@@ -676,9 +679,9 @@ body { padding:0; }
   const EDIZIONE_ATTUALE = {
     etichetta: "EDIZIONE IN CORSO",
     anno: "2026",
-    titolo: "LUDiCa 2026",
+    titolo: "Chiaramonti 2026",
     descrizione: "Un laboratorio di ricerca condivisa dedicato alle storie, alle fonti e alla memoria viva della comunità di Chiaramonti.",
-    dettagli: "Scuola di Storia Digitale e Pubblica di AIPH",
+    dettagli: "LUDiCa · Edizione 2026",
 
     // 1. LINK DI ACCESSO - MODIFICA QUI
     urlEdizione: "https://ludica.dh.unica.it/laboratorio/ludica-26-scuola-di-storia-digitale-e-pubblica/",
@@ -688,7 +691,7 @@ body { padding:0; }
     urlImmagine: "https://ludica.dh.unica.it/wp-content/uploads/sites/9/2026/09/LUDICA_25.png",
 
     // 3. INDIRIZZO ALTERNATIVO (provato solo se il file locale non esiste)
-    urlImmagineAlternativa: "https://ludica.dh.unica.it/wp-content/uploads/sites/9/2026/09/LUDICA_25.png",
+    urlImmagineAlternativa: "./copertina-edizione.png",
 
     testoPulsante: "Scopri l'edizione ↗"
   };
@@ -738,13 +741,15 @@ body { padding:0; }
       .map(urlWeb).filter(Boolean);
     const urls = [...new Set(candidates)];
     let nextIndex = 0;
-    img.hidden = true;
+    img.hidden = false; // Non nascondere con display:none: puo bloccare loading=lazy.
+    img.classList.remove('lf-image-loaded');
     placeholder.hidden = false;
     if (imageStatus) { imageStatus.hidden = true; imageStatus.textContent = ''; }
 
     img.onload = () => {
       if (!img.naturalWidth) return;
       img.hidden = false;
+      img.classList.add('lf-image-loaded');
       placeholder.hidden = true;
       if (imageStatus) imageStatus.hidden = true;
     };
@@ -755,10 +760,11 @@ body { padding:0; }
 
     function tryNextImage() {
       if (nextIndex < urls.length) {
+        img.classList.remove('lf-image-loaded');
         // Importante: non modificare le URL per forzare la cache: alcuni hosting non le accettano.
         img.src = urls[nextIndex++];
       } else {
-        img.hidden = true;
+        img.classList.remove('lf-image-loaded');
         placeholder.hidden = false;
         if (imageStatus) {
           imageStatus.textContent = 'Copertina non raggiungibile. Carica copertina-edizione.png nello stesso repository GitHub.';
