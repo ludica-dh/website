@@ -253,12 +253,13 @@ body { padding:0; }
 .ludica-filiera .lf-current-cover {
   position:relative;display:grid;place-items:center;min-width:0;
   width:100%;aspect-ratio:var(--lf-edition-image-ratio);
-  border:1px solid #ffffff70;border-radius:14px;overflow:hidden;
-  background:linear-gradient(145deg,#4f7568,#1b3932);
+  border:1px solid var(--lf-border);border-radius:14px;overflow:hidden;
+  background:var(--lf-paper);
 }
 .ludica-filiera .lf-current-cover img {
   width:100%;height:100%;position:absolute;inset:0;
   display:block;object-fit:var(--lf-edition-image-fit);
+  background:var(--lf-paper);
 }
 .ludica-filiera .lf-current-cover-placeholder {
   text-align:center;display:grid;gap:10px;place-items:center;
@@ -282,6 +283,15 @@ body { padding:0; }
   .ludica-filiera .lf-current-edition{grid-template-columns:1fr}
 }
 
+
+/* Diagnostica discreta se la copertina non viene trovata. */
+.ludica-filiera .lf-cover-error {
+  position:absolute;left:14px;right:14px;bottom:12px;z-index:2;
+  padding:9px 12px;border-radius:9px;
+  background:var(--lf-paper);border:1px solid var(--lf-border);
+  font-size:var(--lf-small);line-height:1.4;color:var(--lf-ink);
+  letter-spacing:normal;text-align:center;
+}
 </style></head><body><section class="ludica-filiera" data-ludica-filiera aria-label="La filiera condivisa del LUDiCa">
  
 
@@ -300,6 +310,7 @@ body { padding:0; }
       <span data-edition-image-status>IMMAGINE DELL'EDIZIONE</span>
     </div>
     <img data-edition-image alt="Copertina dell'edizione LUDiCa 2026 a Chiaramonti" loading="lazy" hidden>
+    <span class="lf-cover-error" data-edition-image-status hidden role="status"></span>
   </div>
   <a class="lf-current-overlay-link" data-edition-url href="https://ludica.dh.unica.it/laboratorio/ludica-26-scuola-di-storia-digitale-e-pubblica/" target="_blank" rel="noopener noreferrer" aria-label="Scopri l'edizione LUDiCa 2026 (si apre in una nuova scheda)"></a>
 </section>
@@ -657,23 +668,27 @@ body { padding:0; }
 /* ==============================================================
    EDIZIONE ATTUALE - MODIFICA SOLO QUESTO BLOCCO
    urlEdizione: indirizzo della pagina aperta cliccando su tutto il riquadro.
-   urlImmagine: URL pubblico diretto a JPG, PNG, WEBP o altra immagine.
-               Lascia "" per mostrare il segnaposto 2026.
-   IMPORTANTE: la foto deve essere accessibile pubblicamente.
+   urlImmagine: nome del file immagine nel repository oppure URL pubblico.
+   urlImmagineAlternativa: prova questo link se il primo non funziona.
+   CONSIGLIATO: aggiungi copertina-edizione.png accanto all'HTML su GitHub.
    ============================================================== */
 (() => {
   const EDIZIONE_ATTUALE = {
     etichetta: "EDIZIONE IN CORSO",
     anno: "2026",
-    titolo: "LUDiCa 2026",
+    titolo: "Chiaramonti 2026",
     descrizione: "Un laboratorio di ricerca condivisa dedicato alle storie, alle fonti e alla memoria viva della comunità di Chiaramonti.",
-    dettagli: "Scuola di Storia digitale e pubblica AIPH",
+    dettagli: "LUDiCa · Edizione 2026",
 
     // 1. LINK DI ACCESSO - MODIFICA QUI
-    urlEdizione: "https://ludica.dh.unica.it/2026/09/23/ludica-2026-al-via-le-iscrizioni-alla-scuola-aiph-di-storia-digitale-e-pubblica/",
+    urlEdizione: "https://ludica.dh.unica.it/laboratorio/ludica-26-scuola-di-storia-digitale-e-pubblica/",
 
-    // 2. IMMAGINE DI COPERTINA - MODIFICA QUI (es. https://tuosito.it/foto.jpg)
+    // 2. COPERTINA: carica "copertina-edizione.png" ACCANTO all'HTML nel repository GitHub.
+    // Puoi anche inserire qui un URL completo (https://...).
     urlImmagine: "https://ludica.dh.unica.it/wp-content/uploads/sites/9/2026/09/LUDICA_25.png",
+
+    // 3. INDIRIZZO ALTERNATIVO (provato solo se il file locale non esiste)
+    urlImmagineAlternativa: "./copertina-edizione.png",
 
     testoPulsante: "Scopri l'edizione ↗"
   };
@@ -715,25 +730,43 @@ body { padding:0; }
 
     const img = area.querySelector('[data-edition-image]');
     const placeholder = area.querySelector('[data-edition-placeholder]');
-    const imageAddress = urlWeb(EDIZIONE_ATTUALE.urlImmagine);
-    img.alt = 'Copertina di ' + EDIZIONE_ATTUALE.titolo;
     const imageStatus = area.querySelector('[data-edition-image-status]');
-    img.onload = () => { img.hidden = false; placeholder.hidden = true; };
-    img.onerror = () => {
-      img.hidden = true;
-      placeholder.hidden = false;
-      if (imageStatus) imageStatus.textContent = 'Immagine non disponibile: controlla l’URL pubblico nel codice.';
-      console.warn('LUDiCa: impossibile caricare la copertina:', imageAddress);
+    img.alt = 'Copertina di ' + EDIZIONE_ATTUALE.titolo;
+
+    // Caricamento in sequenza: GitHub locale, quindi URL WordPress alternativo.
+    const candidates = [EDIZIONE_ATTUALE.urlImmagine, EDIZIONE_ATTUALE.urlImmagineAlternativa]
+      .map(urlWeb).filter(Boolean);
+    const urls = [...new Set(candidates)];
+    let nextIndex = 0;
+    img.hidden = true;
+    placeholder.hidden = false;
+    if (imageStatus) { imageStatus.hidden = true; imageStatus.textContent = ''; }
+
+    img.onload = () => {
+      if (!img.naturalWidth) return;
+      img.hidden = false;
+      placeholder.hidden = true;
+      if (imageStatus) imageStatus.hidden = true;
     };
-    if (imageAddress) {
-      img.hidden = true;
-      placeholder.hidden = false;
-      img.src = imageAddress;
-    } else {
-      img.hidden = true;
-      img.removeAttribute('src');
-      placeholder.hidden = false;
+    img.onerror = () => {
+      console.warn('LUDiCa: immagine non raggiungibile:', img.src);
+      tryNextImage();
+    };
+
+    function tryNextImage() {
+      if (nextIndex < urls.length) {
+        // Importante: non modificare le URL per forzare la cache: alcuni hosting non le accettano.
+        img.src = urls[nextIndex++];
+      } else {
+        img.hidden = true;
+        placeholder.hidden = false;
+        if (imageStatus) {
+          imageStatus.textContent = 'Copertina non raggiungibile. Carica copertina-edizione.png nello stesso repository GitHub.';
+          imageStatus.hidden = false;
+        }
+      }
     }
+    tryNextImage();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', aggiornaEdizione, {once:true});
