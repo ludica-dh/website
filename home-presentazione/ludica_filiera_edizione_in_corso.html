@@ -195,97 +195,188 @@ body { padding:0; }
 .ludica-filiera .lf-disseminazione .lf-node { background:#fbf3d3; }
 
 
-/* ==============================================================
-   EDIZIONE IN CORSO: COLORI E DIMENSIONI MODIFICABILI
-   URL dell'immagine e link di accesso: EDIZIONE_ATTUALE a fondo pagina.
-   ============================================================== */
+/* ======================================================================
+   EDIZIONE IN CORSO - GUIDA ALLE MODIFICHE VISIVE
+   Tutte le regole seguenti riguardano SOLO il grande riquadro iniziale.
+   Per cambiare testo, foto o collegamento cerca EDIZIONE_ATTUALE in fondo.
+   ====================================================================== */
 .ludica-filiera {
-  --lf-edition-bg:var(--lf-method);
-  --lf-edition-bg-light:var(--lf-method);
-  --lf-edition-text:var(--lf-ink);
-  --lf-edition-highlight:var(--lf-paper);
-  --lf-edition-title:clamp(2rem,4.8vw,3.8rem);
-  --lf-edition-radius:20px;
-  --lf-edition-image-ratio:4/3; /* MODIFICA QUI: proporzioni del riquadro immagine */
-  --lf-edition-image-fit:contain; /* contain = immagine intera; cover = riempimento con ritaglio */
+  /* COLORI: "transparent" significa che si vede lo sfondo della pagina. */
+  --lf-edition-bg: transparent;          /* SFONDO DEL RIQUADRO: lascialo trasparente */
+  --lf-edition-border: #86a89a;          /* COLORE DEL BORDO esterno */
+  --lf-edition-border-width: 2px;        /* SPESSORE BORDO esterno, es. 1px o 3px */
+  --lf-edition-text: var(--lf-ink);      /* COLORE TITOLO / ETICHETTA */
+  --lf-edition-muted: var(--lf-muted);   /* COLORE DESCRIZIONE e dettagli */
+  --lf-edition-button-bg: var(--lf-paper); /* SFONDO PULSANTE */
+  --lf-edition-button-text: var(--lf-ink); /* TESTO PULSANTE */
+  --lf-edition-button-border: var(--lf-border); /* BORDO PULSANTE */
+  --lf-edition-image-bg: var(--lf-paper); /* SFONDO del rettangolo FOTO */
+  --lf-edition-image-border: var(--lf-border); /* BORDO della FOTO */
+
+  /* FONT: dimensioni e famiglie tipografiche modificabili in questo punto. */
+  --lf-edition-heading-font: var(--lf-heading); /* FONT TITOLO: es. Georgia, serif */
+  --lf-edition-body-font: var(--lf-font);   /* FONT descrizione, badge e pulsante */
+  --lf-edition-title: clamp(2rem,4.8vw,3.8rem); /* DIMENSIONE TITOLO */
+  --lf-edition-description-size: var(--lf-lead); /* DIMENSIONE DESCRIZIONE */
+  --lf-edition-meta-size: var(--lf-small); /* DIMENSIONE DETTAGLI */
+  --lf-edition-label-size: var(--lf-small); /* DIMENSIONE ETICHETTA */
+  --lf-edition-button-size: var(--lf-small); /* DIMENSIONE TESTO PULSANTE */
+
+  /* DIMENSIONI: cambiano solo la grande scheda, non le sei sottostanti. */
+  --lf-edition-radius: 20px;             /* ARROTONDAMENTO esterno */
+  --lf-edition-padding: clamp(24px,4vw,52px); /* SPAZIO interno */
+  --lf-edition-gap: clamp(20px,3vw,42px); /* DISTANZA tra testo e foto */
+  --lf-edition-image-ratio: 4/3;         /* FOTO: 4/3, 16/9 o 1/1 */
+  --lf-edition-image-fit: contain;        /* FOTO: contain intera; cover ritagliata */
+  --lf-edition-image-radius: 18px;        /* ANGOLI della cornice esterna */
+
+  /* FOTO / CORNICE ELEGANTE: personalizza qui l'aspetto del box. */
+  --lf-photo-frame-padding: 9px;          /* DISTANZA tra immagine e bordo, es. 0px o 14px */
+  --lf-photo-frame-bg: #fffdf8;           /* COLORE del passepartout: anche transparent */
+  --lf-photo-frame-border: #c2cfc3;       /* COLORE della cornice esterna */
+  --lf-photo-frame-width: 1px;            /* SPESSORE della cornice */
+  --lf-photo-inner-radius: 11px;          /* ANGOLI dell'immagine vera e propria */
+  --lf-photo-shadow: 0 10px 28px rgba(32,59,53,.10); /* OMBRA delicata */
+  --lf-photo-hover-shadow: 0 14px 34px rgba(32,59,53,.15); /* OMBRA al passaggio mouse */
 }
+
+/* SCHEDA PRINCIPALE: sfondo trasparente, SOLO bordo colorato. */
 .ludica-filiera .lf-current-edition {
-  position:relative;overflow:hidden;isolation:isolate;
-  display:grid;grid-template-columns:minmax(0,1.25fr) minmax(240px,.85fr);
-  gap:clamp(20px,3vw,42px);align-items:center;
-  padding:clamp(24px,4vw,52px);margin:0 0 38px;
+  position:relative; overflow:hidden; isolation:isolate;
+  display:grid; grid-template-columns:minmax(0,1.25fr) minmax(240px,.85fr); /* LARGHEZZA colonne */
+  gap:var(--lf-edition-gap); align-items:center;
+  padding:var(--lf-edition-padding); margin:0 0 38px;
+  border:var(--lf-edition-border-width) solid var(--lf-edition-border);
   border-radius:var(--lf-edition-radius);
-  background:linear-gradient(125deg,var(--lf-edition-bg),var(--lf-edition-bg-light));
+  background:var(--lf-edition-bg); /* nessun riempimento verde */
   color:var(--lf-edition-text);
   transition:box-shadow .2s ease,transform .2s ease;
 }
-.ludica-filiera .lf-current-edition[data-clickable="true"] {cursor:pointer}
-@media(hover:hover) {
-  .ludica-filiera .lf-current-edition[data-clickable="true"]:hover{transform:translateY(-2px);box-shadow:0 14px 28px #203b352c}
-  .ludica-filiera .lf-current-edition[data-clickable="true"]:hover .lf-current-link{background:#ffffff}
+.ludica-filiera .lf-current-edition[data-clickable="true"] { cursor:pointer; }
+@media(hover:hover){
+  /* HOVER: cambia qui l'ombra al passaggio del mouse. */
+  .ludica-filiera .lf-current-edition[data-clickable="true"]:hover {transform:translateY(-2px);box-shadow:0 8px 18px #203b351b;}
+  .ludica-filiera .lf-current-edition[data-clickable="true"]:hover .lf-current-link {background:#f8f5ed;}
 }
-.ludica-filiera .lf-current-edition:focus-within{outline:3px solid var(--lf-edition-highlight);outline-offset:3px}
-.ludica-filiera .lf-current-edition :is(h2,p){margin:0;color:inherit}
-.ludica-filiera .lf-current-edition .lf-current-label{
+.ludica-filiera .lf-current-edition:focus-within {outline:3px solid var(--lf-edition-border);outline-offset:3px;}
+.ludica-filiera .lf-current-edition :is(h2,p) {margin:0;color:inherit;}
+
+/* ETICHETTA: "EDIZIONE IN CORSO". */
+.ludica-filiera .lf-current-edition .lf-current-label {
   display:inline-flex;align-items:center;gap:9px;
-  padding:7px 13px;border:1px solid var(--lf-border);border-radius:999px;
-  font-size:var(--lf-small);font-weight:750;letter-spacing:.09em;
+  padding:7px 13px; /* SPAZIO dentro l'etichetta */
+  border:1px solid var(--lf-edition-border);border-radius:999px;
+  font-family:var(--lf-edition-body-font);
+  font-size:var(--lf-edition-label-size);font-weight:750;letter-spacing:.09em;
+  color:var(--lf-edition-text);
 }
 .ludica-filiera .lf-current-label::before {
   content:"";display:block;width:9px;height:9px;border-radius:50%;
-  background:var(--lf-dark);box-shadow:0 0 0 4px #244b4120;
-}
-.ludica-filiera .lf-current-edition h2 {
-  margin:18px 0 12px;font-size:var(--lf-edition-title);line-height:1.1;
-  letter-spacing:-.035em;max-width:740px;
-}
-.ludica-filiera .lf-current-edition .lf-current-text {
-  max-width:620px;font-size:var(--lf-lead);line-height:1.6;color:var(--lf-muted);
-}
-.ludica-filiera .lf-current-meta {font-size:var(--lf-small);margin-top:16px;color:var(--lf-muted)}
-.ludica-filiera .lf-current-edition .lf-current-link {
-  display:inline-flex;align-items:center;justify-content:center;
-  min-height:46px;margin-top:22px;padding:12px 21px;border-radius:100px;
-  background:var(--lf-paper);color:var(--lf-ink);border:1px solid var(--lf-border);
-  font-size:var(--lf-small);font-weight:750;text-decoration:none;
-  pointer-events:none; /* il link trasparente sopra la scheda gestisce il clic */
-}
-.ludica-filiera .lf-current-cover {
-  position:relative;display:grid;place-items:center;min-width:0;
-  width:100%;aspect-ratio:var(--lf-edition-image-ratio);
-  border:1px solid var(--lf-border);border-radius:14px;overflow:hidden;
-  background:var(--lf-paper);
-}
-.ludica-filiera .lf-current-cover img {
-  width:100%;height:100%;position:absolute;inset:0;
-  display:block;object-fit:var(--lf-edition-image-fit);
-  background:var(--lf-paper);
-  opacity:0; /* visibile solo al termine del caricamento */
-  transition:opacity .16s ease;
-}
-.ludica-filiera .lf-current-cover img.lf-image-loaded {opacity:1}
-.ludica-filiera .lf-current-cover-placeholder {
-  text-align:center;display:grid;gap:10px;place-items:center;
-  padding:20px;color:var(--lf-muted);font-size:var(--lf-small);letter-spacing:.06em;
-}
-.ludica-filiera .lf-current-cover-placeholder strong {
-  font:400 clamp(3.5rem,8vw,6rem)/1 var(--lf-heading);
-  color:var(--lf-dark);
-}
-/* Il collegamento e' esteso a tutta la scheda, inclusa l'immagine. */
-.ludica-filiera .lf-current-overlay-link {
-  position:absolute;inset:0;z-index:5;display:block;border-radius:inherit;
-  text-decoration:none;cursor:pointer;
-}
-.ludica-filiera .lf-current-overlay-link:focus-visible {outline:4px solid var(--lf-edition-highlight);outline-offset:-5px}
-@container(max-width:650px){
-  .ludica-filiera .lf-current-edition{grid-template-columns:1fr}
-  .ludica-filiera .lf-current-cover{max-width:100%}
-}
-@media(max-width:650px){
-  .ludica-filiera .lf-current-edition{grid-template-columns:1fr}
+  background:var(--lf-edition-border); /* PALLINO COLORATO */
+  box-shadow:0 0 0 4px #86a89a20;
 }
 
+/* TITOLO: "Chiaramonti 2026". */
+.ludica-filiera .lf-current-edition h2 {
+  margin:18px 0 12px;
+  font-family:var(--lf-edition-heading-font);
+  font-size:var(--lf-edition-title);font-weight:500;line-height:1.1;
+  letter-spacing:-.035em;max-width:740px;
+  color:var(--lf-edition-text);
+}
+/* DESCRIZIONE sotto il titolo. */
+.ludica-filiera .lf-current-edition .lf-current-text {
+  max-width:620px;font-family:var(--lf-edition-body-font);
+  font-size:var(--lf-edition-description-size);line-height:1.6;
+  color:var(--lf-edition-muted);
+}
+/* RIGA DETTAGLI: "LUDiCa · Edizione 2026". */
+.ludica-filiera .lf-current-edition .lf-current-meta {
+  font-family:var(--lf-edition-body-font);
+  font-size:var(--lf-edition-meta-size);margin-top:16px;
+  color:var(--lf-edition-muted);
+}
+
+/* PULSANTE "Scopri l'edizione". Il clic resta attivo su tutta la scheda. */
+.ludica-filiera .lf-current-edition .lf-current-link {
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:46px;margin-top:22px;padding:12px 21px;
+  border-radius:100px; /* ARROTONDAMENTO del pulsante */
+  background:var(--lf-edition-button-bg);
+  color:var(--lf-edition-button-text);
+  border:1px solid var(--lf-edition-button-border);
+  font-family:var(--lf-edition-body-font);
+  font-size:var(--lf-edition-button-size);font-weight:750;text-decoration:none;
+  pointer-events:none; /* l'overlay cliccabile gestisce il clic */
+}
+
+/* FOTO: cornice con passepartout chiaro, separata visivamente dal bordo della scheda.
+   Personalizza colori, bordo, ombra, spaziatura e angoli nelle variabili sopra. */
+.ludica-filiera .lf-current-cover {
+  position:relative;
+  display:grid;
+  place-items:center;
+  min-width:0;
+  width:100%;
+  aspect-ratio:var(--lf-edition-image-ratio); /* PROPORZIONI DEL BOX: es. 4/3, 16/9 */
+  padding:var(--lf-photo-frame-padding); /* PASSEPARTOUT: cornice interna */
+  border:var(--lf-photo-frame-width) solid var(--lf-photo-frame-border);
+  border-radius:var(--lf-edition-image-radius);
+  background:var(--lf-photo-frame-bg);
+  box-shadow:var(--lf-photo-shadow);
+  overflow:hidden;
+  transition:box-shadow .25s ease,border-color .25s ease;
+}
+/* FOTO REALE: niente ritagli; il bordo arrotondato segue il bordo interno. */
+.ludica-filiera .lf-current-cover img {
+  position:absolute;
+  inset:var(--lf-photo-frame-padding);
+  width:calc(100% - 2 * var(--lf-photo-frame-padding));
+  height:calc(100% - 2 * var(--lf-photo-frame-padding));
+  display:block;
+  object-fit:var(--lf-edition-image-fit); /* contain=intera / cover=ritagliata */
+  border-radius:var(--lf-photo-inner-radius);
+  background:var(--lf-edition-image-bg);
+  opacity:0;
+  transition:opacity .2s ease;
+}
+.ludica-filiera .lf-current-cover img.lf-image-loaded {opacity:1;}
+@media (hover:hover) and (pointer:fine) {
+  /* HOVER FOTO: solo una variazione leggerissima dell'ombra, senza zoom. */
+  .ludica-filiera .lf-current-edition[data-clickable="true"]:hover .lf-current-cover {
+    box-shadow:var(--lf-photo-hover-shadow);
+    border-color:var(--lf-edition-border);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .ludica-filiera .lf-current-cover,
+  .ludica-filiera .lf-current-cover img{transition:none;}
+}
+.ludica-filiera .lf-current-cover-placeholder {
+  text-align:center;display:grid;gap:10px;place-items:center;
+  padding:20px;color:var(--lf-edition-muted);
+  font-size:var(--lf-edition-meta-size);letter-spacing:.06em;
+}
+.ludica-filiera .lf-current-cover-placeholder strong {
+  font:400 clamp(3.5rem,8vw,6rem)/1 var(--lf-edition-heading-font);
+  color:var(--lf-edition-text);
+}
+/* AREA CLICCABILE sopra la scheda: NON RIMUOVERE. */
+.ludica-filiera .lf-current-overlay-link {
+  position:absolute;inset:0;z-index:5;display:block;
+  border-radius:inherit;text-decoration:none;cursor:pointer;
+}
+.ludica-filiera .lf-current-overlay-link:focus-visible {
+  outline:4px solid var(--lf-edition-border);outline-offset:-5px;
+}
+/* RESPONSIVE: su schermi stretti la foto scende sotto il testo. */
+@container(max-width:650px){
+  .ludica-filiera .lf-current-edition{grid-template-columns:1fr;}
+  .ludica-filiera .lf-current-cover{max-width:100%;}
+}
+@media(max-width:650px){
+  .ludica-filiera .lf-current-edition{grid-template-columns:1fr;}
+}
 
 /* Diagnostica discreta se la copertina non viene trovata. */
 .ludica-filiera .lf-cover-error {
@@ -303,8 +394,8 @@ body { padding:0; }
   <div class="lf-current-content">
     <span class="lf-current-label" data-edition-label>EDIZIONE IN CORSO</span>
     <h2 id="lf-current-title" data-edition-title>LUDiCa 2026</h2>
-    <p class="lf-current-text" data-edition-text>Il laboratorio della'Università di Cagliari che impiega strumenti e metodi DH alle storie, alle fonti e alla memoria della comunità di Chiaramonti.</p>
-    <p class="lf-current-meta" data-edition-meta>Scuola di Storia Digitale e Pubblica AIPH</p>
+    <p class="lf-current-text" data-edition-text>Un laboratorio di ricerca condivisa dedicato alle storie, alle fonti e alla memoria viva della comunità di Chiaramonti.</p>
+    <p class="lf-current-meta" data-edition-meta>LUDiCa · Edizione 2026</p>
     <span class="lf-current-link" data-edition-button>Scopri l'edizione ↗</span>
   </div>
   <div class="lf-current-cover" data-edition-cover>
@@ -676,6 +767,11 @@ body { padding:0; }
    CONSIGLIATO: aggiungi copertina-edizione.png accanto all'HTML su GitHub.
    ============================================================== */
 (() => {
+  /* ============================================================
+     TESTI VISIBILI DEL RIQUADRO (come nello screenshot)
+     Modifica solo i valori fra virgolette per cambiare le scritte.
+     Il link e la copertina si modificano subito sotto.
+     ============================================================ */
   const EDIZIONE_ATTUALE = {
     etichetta: "EDIZIONE IN CORSO",
     anno: "2026",
