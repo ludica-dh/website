@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Guida al LUDiCa 2026</title>
+<style>
+/* Il solo reset esterno elimina i margini del documento nell'iframe. */
+html,body{margin:0;padding:0;background:transparent}
+.ludica-widget{
+ /* PERSONALIZZA I COLORI: testo principale, secondario, accenti e bordi.
+    Il colore accent è impostato anche in CONFIG, che ha la precedenza. */
+ --ink:#172f42;--muted:#526471;--accent:#984e35;
+ --line:#dcded8;--green:#32634c;
+ /* SFONDI: pagina, card inattive, ricerca e avvisi restano trasparenti.
+    Il gruppo attivo usa i colori dedicati descritti sotto.
+    Per aggiungere un riempimento alle card/ricerca modifica --surface;
+    per avvisi e hover modifica --soft. Il fondo generale è in CONFIG.sfondo. */
+ --paper:transparent;--surface:transparent;--soft:transparent;
+ /* GRUPPO ATTIVO: stesso fondo per scheda madre e pannello delle sottoschede.
+    Questi valori possono essere cambiati anche in CONFIG, che ha precedenza. */
+ --active-bg:#f5e9e1;--active-border:#b8795c;--active-ink:#643b2a;
+ /* FONT: modifica --font-text per cambiare il sans-serif in tutta la guida.
+    --font-title usa lo stesso font per titolo e intestazioni delle sezioni. */
+ --font-text:system-ui,-apple-system,'Segoe UI',Arial,Helvetica,sans-serif;
+ --font-title:var(--font-text);
+ /* DIMENSIONI TESTI: titolo testata, testo, card, voci accordion, note.
+    clamp() adatta il titolo allo schermo; 1rem equivale normalmente a 16px. */
+ --size-title:clamp(2.35rem,5.5vw,4.4rem);--size-body:1rem;--size-card:1.13rem;--size-section:1.1rem;--size-small:.8rem;
+ /* LAYOUT: larghezza massima del contenuto e arrotondamento delle card. */
+ --max-width:1120px;--radius:12px;
+ font-family:var(--font-text);font-size:var(--size-body);line-height:1.65;color:var(--ink);background:var(--paper);
+ padding:clamp(24px,5vw,64px);box-sizing:border-box;overflow-wrap:anywhere;
+}
+.ludica-widget *{box-sizing:border-box}
+.ludica-widget [hidden]{display:none!important}
+.ludica-widget .wrap{max-width:var(--max-width);margin:auto}
+.ludica-widget h1,.ludica-widget h2,.ludica-widget p{margin:0}
+.ludica-widget a{color:var(--accent);text-underline-offset:4px}
+.ludica-widget button,.ludica-widget input,.ludica-widget code{font:inherit}
+.ludica-widget button{cursor:pointer}
+.ludica-widget :focus-visible{outline:3px solid var(--accent);outline-offset:5px}
+.ludica-widget .eyebrow{font-size:var(--size-small);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.ludica-widget .masthead{border-top:3px solid var(--ink);padding-top:24px;position:relative}
+.ludica-widget .edition{float:right;border:1px solid var(--line);border-radius:99px;padding:5px 15px;font-size:var(--size-small);letter-spacing:.05em}
+.ludica-widget h1{font-family:var(--font-title);font-weight:400;font-size:var(--size-title);line-height:1.12;letter-spacing:-.035em;margin:22px 0 20px;max-width:850px}
+.ludica-widget .intro{color:var(--muted);max-width:780px;font-size:1.05em}
+.ludica-widget .section-head{display:flex;gap:16px;justify-content:space-between;align-items:baseline;margin:42px 0 17px}
+.ludica-widget h2{font-family:var(--font-title);font-size:1.65rem;font-weight:400;line-height:1.3}
+.ludica-widget .section-note{color:var(--muted);font-size:var(--size-small)}
+.ludica-widget .areas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ludica-widget .area{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:21px;display:flex;flex-direction:column;gap:13px;min-height:155px;color:var(--ink);text-decoration:none;position:relative}
+.ludica-widget a.area:hover{border-color:var(--accent);box-shadow:0 5px 18px #172f420b}
+.ludica-widget .area-top{display:flex;justify-content:space-between;align-items:center;color:var(--accent)}
+.ludica-widget .area-icon{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ludica-widget .area-name{font-size:var(--size-card);font-weight:650;line-height:1.35}
+.ludica-widget .badge{font-size:var(--size-small);display:inline-flex;align-items:center;gap:7px;color:var(--green)}
+.ludica-widget .badge::before{content:'';width:6px;height:6px;background:currentColor;border-radius:50%;flex-shrink:0}
+.ludica-widget .area[data-state="aggiornamento"] .badge{color:#796021}
+.ludica-widget .pending{font-size:.75rem;color:var(--muted);margin-top:-8px}
+.ludica-widget .guide{border-top:1px solid var(--line);margin-top:40px}
+.ludica-widget .guide .section-head{margin-top:28px}
+.ludica-widget .tools{display:flex;gap:16px;align-items:center;justify-content:space-between;margin:22px 0 12px;flex-wrap:wrap}
+.ludica-widget .search{display:flex;align-items:center;gap:10px;flex:1 1 280px;max-width:500px;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:9px 13px}
+.ludica-widget input{width:100%;min-width:0;border:0;background:transparent;color:var(--ink);padding:4px}
+.ludica-widget input::placeholder{color:var(--muted)}
+.ludica-widget .actions{display:flex;gap:8px;flex-wrap:wrap}
+.ludica-widget .actions button{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:9px 12px;font-size:var(--size-small);min-height:44px}
+.ludica-widget .actions button:hover{background:var(--soft)}
+.ludica-widget .result{color:var(--muted);font-size:var(--size-small);margin-bottom:12px}
+.ludica-widget details{border-bottom:1px solid var(--line)}
+.ludica-widget summary{list-style:none;display:flex;gap:18px;align-items:center;min-height:72px;padding:18px 3px;cursor:pointer;font-size:var(--size-section);font-weight:600}
+.ludica-widget summary::-webkit-details-marker{display:none}
+.ludica-widget summary:hover{color:var(--accent)}
+.ludica-widget .number{font-size:.75rem;color:var(--accent);font-weight:500;min-width:22px;font-variant-numeric:tabular-nums}
+.ludica-widget .chevron{margin-left:auto;width:10px;height:10px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);flex-shrink:0;margin-right:8px;transition:transform .15s}
+.ludica-widget details[open] .chevron{transform:rotate(225deg)}
+.ludica-widget details[open] summary{color:var(--accent)}
+.ludica-widget .content{max-width:800px;padding:0 32px 25px 43px;color:var(--muted);line-height:1.85;white-space:pre-line}
+.ludica-widget .content p{margin:0 0 12px}
+.ludica-widget .content p:last-child{margin:0}
+.ludica-widget .content strong{color:var(--ink)}
+.ludica-widget .content ul,.ludica-widget .content ol{padding-left:22px;margin:10px 0}
+.ludica-widget .content blockquote{border-left:2px solid var(--accent);padding-left:18px;margin-left:0}
+.ludica-widget .notice{margin-top:20px;padding:12px 15px;background:var(--soft);border-radius:8px;font-size:var(--size-small);color:var(--muted)}
+.ludica-widget footer{display:flex;justify-content:space-between;gap:15px;border-top:1px solid var(--line);margin-top:34px;padding-top:18px;font-size:var(--size-small);color:var(--muted)}
+.ludica-widget .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:700px){.ludica-widget .areas{grid-template-columns:repeat(2,minmax(0,1fr))}.ludica-widget .section-head{align-items:flex-start;flex-direction:column;gap:5px}.ludica-widget .edition{float:none;display:inline-block;margin-bottom:18px}.ludica-widget .masthead .eyebrow{display:block}.ludica-widget .area{padding:17px}.ludica-widget .content{padding-left:0;padding-right:0}.ludica-widget footer{flex-direction:column}}
+@media(max-width:360px){.ludica-widget .areas{grid-template-columns:1fr}}
+/* NAVIGAZIONE LATERALE — PERSONALIZZAZIONE:
+   --sidebar-width = larghezza colonna temi a sinistra;
+   --subcard-columns = colonne delle sottoschede nel pannello a destra;
+   --card-gap = distanza tra card. Sotto 760px il layout diventa verticale.
+   Per cambiare 760px aggiorna ANCHE il matchMedia nello script. */
+.ludica-widget{--sidebar-width:clamp(210px,28%,300px);--subcard-columns:2;--card-gap:14px}
+.ludica-widget .card-layout{display:grid;grid-template-columns:var(--sidebar-width) minmax(0,1fr);gap:22px;align-items:start}
+.ludica-widget .themes{display:flex;flex-direction:column;gap:var(--card-gap);min-width:0}
+.ludica-widget .panels{display:flex;flex-direction:column;gap:20px;min-width:0}
+.ludica-widget .theme{font:inherit;text-align:left;min-height:0;width:100%;padding:17px;gap:7px;display:grid;grid-template-columns:26px minmax(0,1fr) 18px;align-items:start}
+.ludica-widget .theme .area-top{display:contents}
+.ludica-widget .theme .area-icon{grid-column:1;grid-row:1;width:22px;height:22px;color:var(--accent)}
+.ludica-widget .theme .area-name{grid-column:2;grid-row:1;font-size:1rem}
+.ludica-widget .theme-marker{grid-column:3;grid-row:1;color:var(--accent);font-size:1.1rem;line-height:1.5}
+.ludica-widget .theme-description{grid-column:2 / 4;grid-row:2;color:var(--muted);font-size:.82rem;line-height:1.5}
+.ludica-widget .theme-count{grid-column:2 / 4;grid-row:3;color:var(--accent);font-size:var(--size-small)}
+.ludica-widget .theme:hover{border-color:var(--accent)}
+.ludica-widget .theme[aria-expanded="true"]{background:var(--active-bg);border-color:var(--active-border);box-shadow:inset 4px 0 0 var(--active-border);color:var(--active-ink)}
+.ludica-widget .theme[aria-expanded="true"] .theme-description,.ludica-widget .theme[aria-expanded="true"] .theme-count{color:var(--active-ink)}
+.ludica-widget .theme-panel{border:1px solid var(--active-border);border-radius:var(--radius);background:var(--active-bg);padding:clamp(18px,2.5vw,28px);margin:0;min-width:0;color:var(--ink)}
+.ludica-widget .panel-heading{margin-bottom:20px}
+.ludica-widget .panel-heading h3{font:600 1.25rem/1.4 var(--font-text);margin:0 0 5px;color:var(--active-ink)}
+.ludica-widget .subcards{display:grid;grid-template-columns:repeat(var(--subcard-columns),minmax(0,1fr));align-items:start;gap:var(--card-gap)}
+.ludica-widget .subcard{border:1px solid var(--active-border);border-radius:var(--radius);background:var(--active-bg);min-width:0}
+.ludica-widget details.subcard{border-bottom:1px solid var(--active-border)}
+.ludica-widget .subcard summary{display:flex;flex-direction:column;align-items:stretch;gap:13px;padding:18px;min-height:145px;font-weight:400}
+.ludica-widget .subcard .area-top{width:100%}
+.ludica-widget .sub-marker::after{content:'+';font-size:1.3rem;line-height:1}
+.ludica-widget details[open] .sub-marker::after{content:'−'}
+.ludica-widget .read-label{font-size:var(--size-small);color:var(--accent);margin-top:auto}
+.ludica-widget .read-label::after{content:'Leggi la scheda'}
+.ludica-widget details[open] .read-label::after{content:'Chiudi la scheda'}
+.ludica-widget .subcard .content{padding:0 18px 20px;max-width:none;font-size:.95rem}
+.ludica-widget .info-card[open]{border-color:var(--accent)}
+@media(min-width:761px) and (max-width:1000px){.ludica-widget .subcards{grid-template-columns:1fr}}
+@media(max-width:760px){
+ .ludica-widget .card-layout{grid-template-columns:1fr}
+ .ludica-widget .theme-panel{margin-top:calc(-1 * var(--card-gap));border-top-left-radius:0;border-top-right-radius:0;padding:17px}
+ .ludica-widget .theme[aria-expanded="true"]{border-bottom-left-radius:0;border-bottom-right-radius:0}
+}
+@media(max-width:560px){.ludica-widget .subcards{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.ludica-widget *{transition:none!important}}
+@media print{.ludica-widget{padding:0;background:transparent}.ludica-widget .tools{display:none}.ludica-widget .areas{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<main class="ludica-widget" id="ludica">
+ <div class="wrap">
+  <!-- Testata attivabile/disattivabile con CONFIG.mostraTestata nello script. -->
+  <header class="masthead" id="masthead">
+   <span class="edition" id="edition"></span>
+   <p class="eyebrow">LUDiCa · Laboratorio di umanistica digitale</p>
+   <h1 id="title">Guida al LUDiCa 2026</h1>
+   <p class="intro" id="subtitle"></p>
+  </header>
+  <section class="directory" aria-labelledby="directory-title">
+   <div class="section-head"><h2 id="directory-title">Esplora la scuola</h2><span class="section-note">Scegli un tema e scopri le schede dedicate</span></div>
+   <div class="tools">
+    <label class="search" id="search-box"><span aria-hidden="true">⌕</span><span class="sr-only">Cerca in tutte le schede</span><input id="search" type="search" placeholder="Cerca informazioni, persone, materiali…" autocomplete="off"></label>
+    <div class="actions"><button type="button" id="expand">Apri tutte le sottoschede</button><button type="button" id="collapse">Chiudi le sottoschede</button></div>
+   </div>
+   <p class="result" id="result" role="status" aria-live="polite" aria-atomic="true"></p>
+   <!-- Desktop: temi a sinistra, sottoschede a destra.
+        Mobile: il pannello segue subito la relativa scheda madre. -->
+   <div class="card-layout">
+    <div class="themes" id="themes" role="group" aria-label="Temi della guida"></div>
+    <div class="panels" id="panels"></div>
+   </div>
+   <p id="empty" hidden>Nessuna scheda trovata. Prova con un'altra parola.</p>
+  </section>
+  <p class="notice" id="notice" role="status" hidden></p>
+  <footer><span id="footer-brand"></span><span>Storie, territorio, comunità.</span></footer>
+  <noscript><p>Attiva JavaScript per consultare la guida interattiva.</p></noscript>
+ </div>
+</main>
+<script>
+'use strict';
+/* ==============================================================
+ CONFIG — MODIFICA QUI PER OGNI EDIZIONE
+ Il CSV deve contenere le colonne documentate in ISTRUZIONI.md.
+ Nessuna libreria, font o icona esterna: funziona anche offline.
+ ============================================================== */
+const CONFIG = {
+ edizione:'2026',
+ titolo:'Guida al LUDiCa {edizione}',
+ sottotitolo:'Qui trovi tutte le informazioni pratiche — dal tema alle date, dalla sede alle collaborazioni che rendono possibile la scuola — e le aree dedicate a iscrizioni, programma e materiali.',
+ accent:'#984e35', // Terracotta: link, numeri, dettagli. Scegli colori con contrasto adeguato.
+ // COLORI DEL TEMA SELEZIONATO: scheda madre + pannello a destra.
+ // Cambia questi tre valori per personalizzare l'evidenziazione del gruppo.
+ sfondoAttivo:'#f5e9e1',
+ bordoAttivo:'#b8795c',
+ testoAttivo:'#643b2a',
+ // TESTATA (titolo, sottotitolo, edizione e riga superiore):
+ // true = visibile; false = nascosta, senza occupare spazio.
+ // La navigazione per temi resta visibile anche senza testata.
+ mostraTestata:false,
+ // FONDO GENERALE: trasparente per mostrare lo sfondo della pagina WordPress.
+ // Per uno sfondo pieno sostituisci 'transparent' con un colore, es. '#faf8f3'.
+ // Le card inattive, la ricerca e gli avvisi sono trasparenti.
+ // Il gruppo selezionato usa sfondoAttivo per renderne riconoscibile il legame.
+ sfondo:'transparent',
+ csvUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vS34F0w8wxRcuKCdA6U47ZME5g8MER3REtlrlt5arjiPB79oEepkWAFECBd2NbFfKPzEHlmMxkoLGWS/pub?gid=887224959&single=true&output=csv', // URL pubblicato CSV; vuoto = dati locali, nessun avviso di rete.
+ mostraAree:true, // true = includi le aree con link tra le sottoschede; false = nascondile.
+ mostraRicerca:true, // true = mostra il campo di ricerca; false = nascondilo.
+ gruppoIniziale:'scuola', // ID del tema aperto all'avvio; '' = nessun tema aperto.
+ aperti:['tema'], // ID aperti all'avvio; [] = chiusi; ['*'] = tutti.
+ /* TEMI: modifica qui titoli, descrizioni, ordine e assegnazione delle voci.
+    Le sezioni e le aree CSV esistenti sono associate tramite i loro ID.
+    Per spostare una voce basta spostarne l'ID nell'elenco 'voci'.
+    In alternativa aggiungi al CSV la colonna FACOLTATIVA 'gruppo':
+    scrivi l'ID del tema (es. logistica); ha precedenza sulla mappa qui sotto.
+    Un gruppo nuovo nel CSV viene aggiunto automaticamente. Le voci senza
+    associazione vengono raccolte nel tema 'Altre informazioni'.
+    Per aggiungere un tema crea un oggetto con id, titolo, descrizione, voci. */
+ gruppi:[
+  {id:'scuola',titolo:'La scuola',descrizione:'Il tema e il percorso di lavoro',voci:['tema','funziona']},
+  {id:'logistica',titolo:'Info logistiche',descrizione:'Quando e dove incontrarsi',voci:['quando','dove']},
+  {id:'partecipare',titolo:'Partecipare',descrizione:'Iscrizioni, requisiti e opportunità',voci:['iscrizioni','partecipanti','cfu','borse','cittadini']},
+  {id:'persone',titolo:'Persone e reti',descrizione:'Studenti, docenti e collaborazioni',voci:['studenti','docenti','reti']},
+  {id:'esiti',titolo:'Esiti e restituzione',descrizione:'I risultati e il dialogo con la comunità',voci:['esiti','restituzione']},
+  {id:'media',titolo:'Media e galleria',descrizione:'Stampa, immagini e racconti',voci:['stampa','galleria']}
+ ],
+ timeoutMs:10000,
+ parentOrigin:'', // Es. 'https://ludica.dh.unica.it'; vuoto = origine del referrer.
+ // Facoltativo: impostazioni diverse per edizione; il CSV può contenere più anni.
+ edizioni:{ /* '2027': {csvUrl:'https://...', titolo:'Guida al LUDiCa {edizione}'} */ }
+};
+/* Fallback: solo il tema è leggibile nello screenshot. I testi chiusi e
+ gli URL non sono disponibili: non vengono inventati date, crediti o link. */
+const FALLBACK = [
+ {tipo:'sezione',id:'tema',ordine:1,titolo:'Il tema della scuola',contenuto:'<p><strong>Come si studia la storia di una Comunità di villaggio?</strong> È questa la domanda che affronteremo al LUDiCa 26 con lezioni metodologiche, approfondimenti seminariali e il contatto diretto col territorio e la comunità.</p>'},
+ ...['Quando si tiene','Dove si tiene','Come funziona','Chi può partecipare','Reti organizzativa e scientifica','La restituzione pubblica','CFU','Borse di studio AIPH','Cittadini/e di Chiaramonti'].map((titolo,i)=>({tipo:'sezione',id:['quando','dove','funziona','partecipanti','reti','restituzione','cfu','borse','cittadini'][i],ordine:i+2,titolo,contenuto:'Le informazioni di questa sezione saranno pubblicate a breve.'})),
+ ...['Iscrizioni','Studenti','Docenti e Seminari','Esiti','Stampa e media','Galleria'].map((titolo,i)=>({tipo:'area',id:['iscrizioni','studenti','docenti','esiti','stampa','galleria'][i],ordine:i+1,titolo,stato:['accedi','accedi','accedi','aggiornamento','disponibile','aggiornamento'][i],url:''}))
+];
+const root=document.getElementById('ludica');
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+const requestedYear=params.get('edizione');
+const year=requestedYear && /^\d{4}$/.test(requestedYear)?requestedYear:CONFIG.edizione;
+const cfg={...CONFIG,...(CONFIG.edizioni[year]||{}),edizione:year};
+if(params.has('csv')) cfg.csvUrl=params.get('csv').trim();
+if(params.get('sfondo')==='trasparente')cfg.sfondo='transparent';
+root.style.setProperty('--accent',cfg.accent);
+root.style.setProperty('--paper',cfg.sfondo);
+root.style.setProperty('--active-bg',cfg.sfondoAttivo);
+root.style.setProperty('--active-border',cfg.bordoAttivo);
+root.style.setProperty('--active-ink',cfg.testoAttivo);
+const title=cfg.titolo.replaceAll('{edizione}',cfg.edizione);
+$('masthead').hidden=!cfg.mostraTestata;
+$('title').textContent=title;document.title=title;
+$('edition').textContent='Edizione '+cfg.edizione;
+$('subtitle').textContent=cfg.sottotitolo;
+$('footer-brand').textContent='LUDiCa / '+cfg.edizione;
+$('search-box').hidden=!cfg.mostraRicerca;
+
+/* PARSER CSV: separatore , ; o TAB, escape "", campi multilinea,
+ BOM, CRLF, righe vuote; gli errori di struttura attivano il fallback. */
+function parseCSV(text){
+ text=text.replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n');
+ function read(delimiter){
+  const rows=[];let row=[],cell='',quoted=false;
+  for(let i=0;i<text.length;i++){
+   const c=text[i];
+   if(c==='"'){
+    if(quoted&&text[i+1]==='"'){cell+='"';i++;}
+    else if(quoted){quoted=false;}
+    else if(cell===''){quoted=true;}
+    else throw Error('Virgolette CSV non valide');
+   }else if(c===delimiter&&!quoted){row.push(cell);cell='';}
+   else if(c==='\n'&&!quoted){row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell='';}
+   else cell+=c;
+  }
+  if(quoted)throw Error('Campo CSV non chiuso');
+  row.push(cell);if(row.some(x=>x.trim()))rows.push(row);
+  return rows;
+ }
+ let best=null;
+ for(const d of [',',';','\t']){
+  try{const rows=read(d);if(rows.length && (!best||rows[0].length>best[0].length))best=rows;}catch{}
+ }
+ if(!best||best.length<2)throw Error('CSV vuoto o non valido');
+ const headers=best[0].map(h=>h.trim().toLowerCase());
+ if(!['tipo','id','titolo'].every(h=>headers.includes(h))||new Set(headers).size!==headers.length)throw Error('Intestazioni CSV non valide');
+ return best.slice(1).map(row=>{
+  if(row.length!==headers.length)throw Error('Numero colonne non coerente');
+  return Object.fromEntries(headers.map((h,i)=>[h,row[i].trim()]));
+ });
+}
+function safeURL(value,link=false){
+ try{
+  if(!value)return '';
+  const u=new URL(value,location.href);
+  return ['https:','http:',...(link?['mailto:','tel:']:[])].includes(u.protocol)?u.href:'';
+ }catch{return '';}
+}
+/* HTML sicuro: ricostruzione in DOM da una whitelist, senza attributi
+ di stile, eventi, immagini, embed o script. Link solo http(s), mailto, tel. */
+function safeHTML(value){
+ const source=new DOMParser().parseFromString(value,'text/html');
+ const fragment=document.createDocumentFragment();
+ const allowed=new Set(['P','BR','STRONG','B','EM','I','UL','OL','LI','A','BLOCKQUOTE','H3','H4','CODE']);
+ const blocked=new Set(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','SVG','MATH','IMG','VIDEO','AUDIO','TEMPLATE','FORM','INPUT','LINK','META']);
+ function append(node,target){
+  if(node.nodeType===3){target.append(document.createTextNode(node.textContent));return;}
+  if(node.nodeType!==1||blocked.has(node.tagName))return;
+  if(!allowed.has(node.tagName)){node.childNodes.forEach(n=>append(n,target));return;}
+  const el=document.createElement(node.tagName.toLowerCase());
+  if(node.tagName==='A'){
+   const href=safeURL(node.getAttribute('href'),true);
+   if(href){el.href=href;el.target='_blank';el.rel='noopener noreferrer';el.setAttribute('aria-label',node.textContent+' (si apre in una nuova scheda)');}
+  }
+  node.childNodes.forEach(n=>append(n,el));target.append(el);
+ }
+ source.body.childNodes.forEach(n=>append(n,fragment));return fragment;
+}
+const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const bool=(value,def=true)=>value==null||value===''?def:!['false','0','no','nascosto'].includes(norm(value));
+function prepare(rows){
+ const ids=new Set();
+ return rows.filter(r=>!r.edizione||r.edizione===cfg.edizione).filter(r=>bool(r.visibile)&&norm(r.stato)!=='nascosto').map(r=>{
+  if(!['area','sezione'].includes(norm(r.tipo))||!r.id||!r.titolo)throw Error('Riga senza tipo, ID o titolo validi');
+  const key=r.tipo+':'+r.id;if(ids.has(key))throw Error('ID duplicato');ids.add(key);
+  return {...r,tipo:norm(r.tipo)};
+ }).sort((a,b)=>{
+  const na=a.ordine!==''&&a.ordine!=null?Number(a.ordine):NaN;
+  const nb=b.ordine!==''&&b.ordine!=null?Number(b.ordine):NaN;
+  return (Number.isFinite(na)?na:Infinity)-(Number.isFinite(nb)?nb:Infinity)||a.id.localeCompare(b.id,'it',{numeric:true});
+ });
+}
+const icons=[
+ '<path d="M8 3v4m8-4v4M6 7h12v5a6 6 0 0 1-12 0zm6 11v3"/>',
+ '<path d="m2 8 10-5 10 5-10 5zM6 10v7c4 3 8 3 12 0v-7M22 8v9"/>',
+ '<path d="M4 4h16v12H4zM8 21l4-5 4 5M8 8h8m-8 4h5"/>',
+ '<path d="m4 11 14-6v14L4 13zm0 0v7h4v-4m13-5v6"/>',
+ '<path d="M4 4h16v16H4zM8 8h8m-8 4h8m-8 4h5"/>',
+ '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 6-6 5 5 3-3 4 4"/><circle cx="16" cy="8" r="1"/>'
+];
+/* NAVIGAZIONE A SCHEDE: un tema apre il proprio pannello di sottoschede.
+ Le informazioni testuali si aprono dentro le card; le aree portano ai link.
+ La ricerca attraversa tutti i temi e apre i contenuti corrispondenti. */
+let items=[],groups=[],filtering=false,openBeforeSearch=new Map();
+let selectedGroup=cfg.gruppoIniziale;
+/* RESPONSIVE: usa lo stesso limite di 760px presente nel CSS.
+   Spostiamo i pannelli nel DOM per mantenere anche al mobile l'ordine
+   scheda madre → sottoschede, sia visivo sia da tastiera. */
+const mobileLayout=window.matchMedia('(max-width:760px)');
+function syncPanelPlacement(){
+ groups.forEach(group=>{
+  if(mobileLayout.matches)group.button.after(group.panel);
+  else $('panels').append(group.panel);
+ });
+ $('panels').hidden=mobileLayout.matches;
+ scheduleHeight();
+}
+mobileLayout.addEventListener('change',syncPanelPlacement);
+function groupRows(data){
+ const defined=cfg.gruppi.map(g=>({...g,rows:[]}));
+ const byId=new Map(defined.map(g=>[g.id,g]));
+ for(const row of data){
+  if(row.tipo==='area'&&!cfg.mostraAree)continue;
+  let id=(row.gruppo||'').trim()||defined.find(g=>g.voci?.includes(row.id))?.id||'altre';
+  if(!byId.has(id)){
+   const group={id,titolo:id==='altre'?'Altre informazioni':id,descrizione:'Informazioni e materiali dedicati',rows:[]};
+   defined.push(group);byId.set(id,group);
+  }
+  byId.get(id).rows.push(row);
+ }
+ return defined.filter(g=>g.rows.length);
+}
+function icon(index){
+ const span=document.createElement('span');span.className='area-top';
+ span.innerHTML='<svg class="area-icon" viewBox="0 0 24 24" aria-hidden="true">'+icons[index%icons.length]+'</svg>';
+ return span;
+}
+function render(rows){
+ const data=prepare(rows);
+ if(!data.length)throw Error('Nessun dato per questa edizione');
+ $('themes').replaceChildren();$('panels').replaceChildren();items=[];groups=[];
+ const themed=groupRows(data);
+ themed.forEach((g,i)=>{
+  const button=document.createElement('button');button.type='button';button.className='area theme';
+  button.id='theme-'+i;button.setAttribute('aria-controls','panel-'+i);
+  const name=document.createElement('span');name.className='area-name';name.textContent=g.titolo;
+  const description=document.createElement('span');description.className='theme-description';description.textContent=g.descrizione;
+  const count=document.createElement('span');count.className='theme-count';count.textContent=g.rows.length+' schede';
+  const top=icon(i);const marker=document.createElement('span');marker.className='theme-marker';marker.textContent='+';marker.setAttribute('aria-hidden','true');top.append(marker);
+  button.append(top,name,description,count);
+  const panel=document.createElement('section');panel.className='theme-panel';panel.id='panel-'+i;
+  panel.setAttribute('aria-labelledby','panel-title-'+i);
+  const heading=document.createElement('div');heading.className='panel-heading';
+  const title=document.createElement('h3');title.id='panel-title-'+i;title.textContent=g.titolo;
+  const note=document.createElement('p');note.className='section-note';note.textContent=g.descrizione;
+  heading.append(title,note);
+  const grid=document.createElement('div');grid.className='subcards';panel.append(heading,grid);
+  const entry={...g,button,panel,marker,items:[]};groups.push(entry);
+  g.rows.forEach((r,j)=>{
+   let card,detail=null;
+   if(r.tipo==='area'){
+    const state=['aggiornamento','in aggiornamento'].includes(norm(r.stato))?'aggiornamento':norm(r.stato)==='disponibile'?'disponibile':'accedi';
+    const href=state==='aggiornamento'?'':safeURL(r.url);
+    card=document.createElement(href?'a':'div');card.className='area subcard';card.dataset.state=state;
+    if(href){card.href=href;card.target='_blank';card.rel='noopener noreferrer';card.setAttribute('aria-label',r.titolo+' (si apre in una nuova scheda)');}
+    const top=icon(j);const arrow=document.createElement('span');arrow.textContent=href?'↗':'—';arrow.setAttribute('aria-hidden','true');top.append(arrow);
+    const name=document.createElement('span');name.className='area-name';name.textContent=r.titolo;
+    const badge=document.createElement('span');badge.className='badge';badge.textContent=state==='aggiornamento'?'In aggiornamento':state==='disponibile'?'Disponibile':'Accedi';
+    card.append(top,name,badge);
+    if(!href&&state!=='aggiornamento'){
+     const note=document.createElement('span');note.className='pending';note.textContent='Collegamento in arrivo';card.append(note);
+    }
+   }else{
+    detail=document.createElement('details');card=detail;card.className='subcard info-card';
+    detail.open=bool(r.aperto,cfg.aperti.includes('*')||cfg.aperti.includes(r.id));
+    const summary=document.createElement('summary');
+    const top=icon(j);const marker=document.createElement('span');marker.className='sub-marker';marker.setAttribute('aria-hidden','true');top.append(marker);
+    const name=document.createElement('span');name.className='area-name';name.textContent=r.titolo;
+    const label=document.createElement('span');label.className='read-label';label.setAttribute('aria-hidden','true');
+    summary.append(top,name,label);
+    const content=document.createElement('div');content.className='content';content.append(safeHTML(r.contenuto||'Informazioni in aggiornamento.'));
+    if(r.url&&safeURL(r.url)){
+     const p=document.createElement('p'),a=document.createElement('a');a.href=safeURL(r.url);a.target='_blank';a.rel='noopener noreferrer';a.textContent='Approfondisci';a.setAttribute('aria-label','Approfondisci: '+r.titolo+' (nuova scheda)');p.append(a);content.append(p);
+    }
+    detail.append(summary,content);
+   }
+   grid.append(card);
+   const item={card,detail,text:norm(r.titolo+' '+card.textContent),group:entry};items.push(item);entry.items.push(item);
+  });
+  button.addEventListener('click',()=>{
+   const wasSelected=selectedGroup===g.id&&!filtering;
+   $('search').value='';selectedGroup=wasSelected?'':g.id;filter();
+  });
+  $('themes').append(button);$('panels').append(panel);
+ });
+ filtering=false;openBeforeSearch=new Map();syncPanelPlacement();filter();
+}
+function filter(){
+ const q=norm($('search').value).trim();
+ if(q&&!filtering){openBeforeSearch=new Map(items.filter(x=>x.detail).map(x=>[x.detail,x.detail.open]));filtering=true;}
+ let count=0;
+ groups.forEach(group=>{
+  const themeMatch=norm(group.titolo+' '+group.descrizione).includes(q);
+  let matches=0;
+  group.items.forEach(item=>{
+   const match=!q||themeMatch||item.text.includes(q);
+   item.card.hidden=!match;if(match){matches++;count++;}
+   if(item.detail){
+    if(q&&match)item.detail.open=true;
+    if(!q&&filtering)item.detail.open=openBeforeSearch.get(item.detail)??item.detail.open;
+   }
+  });
+  const expanded=!!(q?matches:selectedGroup===group.id);
+  group.button.hidden=!!q&&!matches;group.panel.hidden=!expanded;
+  group.button.setAttribute('aria-expanded',String(expanded));group.marker.textContent=expanded?'−':'→';
+ });
+ if(!q)filtering=false;
+ $('result').textContent=q?count+' di '+items.length+' schede corrispondono alla ricerca':groups.length+' temi · '+items.length+' schede';
+ $('empty').hidden=count!==0;scheduleHeight();
+}
+$('search').addEventListener('input',filter);
+for(const [id,open] of [['expand',true],['collapse',false]])$(id).addEventListener('click',()=>{
+ items.forEach(({detail,card,group})=>{if(detail&&!card.hidden&&!group.panel.hidden)detail.open=open;});
+ scheduleHeight();
+});
+/* Resize: misura solo il contenitore, mai l'altezza del viewport dell'iframe,
+ così l'altezza può diminuire. Il parent deve validare origine E source. */
+let parentOrigin=cfg.parentOrigin;
+if(!parentOrigin){try{parentOrigin=new URL(document.referrer).origin;}catch{parentOrigin='';}}
+let heightFrame=0,lastHeight=0;
+function scheduleHeight(){
+ if(heightFrame)return;
+ heightFrame=requestAnimationFrame(()=>{
+  heightFrame=0;
+  const height=Math.ceil(root.getBoundingClientRect().height);
+  if(window.parent!==window&&parentOrigin&&parentOrigin!=='null'&&height!==lastHeight){
+   lastHeight=height;window.parent.postMessage({type:'ludica:resize',version:1,height},parentOrigin);
+  }
+ });
+}
+if('ResizeObserver'in window)new ResizeObserver(scheduleHeight).observe(root);
+root.addEventListener('toggle',scheduleHeight,true);window.addEventListener('resize',scheduleHeight);
+window.addEventListener('message',e=>{if(e.source===parent&&e.origin===parentOrigin&&e.data?.type==='ludica:measure'){lastHeight=0;scheduleHeight();}});
+if(document.fonts)document.fonts.ready.then(scheduleHeight);
+/* Fallback immediato: nessun avviso se non è stato configurato un CSV. */
+render(localFallback());
+function localFallback(){
+ return FALLBACK.map(r=>cfg.edizione==='2026'?r:{...r,contenuto:'Le informazioni di questa edizione saranno pubblicate a breve.'});
+}
+async function load(){
+ if(!cfg.csvUrl)return;
+ const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),cfg.timeoutMs);
+ try{
+  const url=safeURL(cfg.csvUrl);if(!url)throw Error('URL CSV non valido');
+  const response=await fetch(url,{signal:controller.signal,credentials:'omit',cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const text=await response.text();
+  if(/^\s*(?:<!doctype\s+html|<html)/i.test(text))throw Error('Risposta HTML invece di CSV');
+  const rows=parseCSV(text);prepare(rows);render(rows);
+ }catch(error){
+  render(localFallback());$('notice').hidden=false;
+  $('notice').textContent='La fonte aggiornata non è al momento disponibile. Stai consultando la versione locale della guida, con alcune informazioni da completare.';
+  console.warn('LUDiCa: caricamento CSV non riuscito.',error.message);
+ }finally{clearTimeout(timeout);scheduleHeight();}
+}
+load();
+</script>
+</body>
+</html>
