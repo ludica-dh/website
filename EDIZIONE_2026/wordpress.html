@@ -1,0 +1,27 @@
+<!-- Sostituisci NOME e REPOSITORY con l'URL reale di GitHub Pages.
+     Per più widget usa ID differenti e una copia di questo blocco per ognuno. -->
+<iframe
+ id="ludica-guide-2026"
+ title="Guida al LUDiCa 2026"
+ src="https://NOME.github.io/REPOSITORY/index.html?edizione=2026"
+ width="100%" height="1450"
+ style="display:block;width:100%;border:0;background:transparent"
+ loading="lazy"
+ referrerpolicy="strict-origin-when-cross-origin">
+</iframe>
+<script>
+(() => {
+ const frame = document.getElementById('ludica-guide-2026');
+ const origin = new URL(frame.src).origin;
+ window.addEventListener('message', event => {
+  if (event.origin !== origin || event.source !== frame.contentWindow) return;
+  const data = event.data;
+  if (!data || data.type !== 'ludica:resize' || data.version !== 1) return;
+  if (typeof data.height !== 'number' || !Number.isFinite(data.height) || data.height <= 0) return;
+  frame.style.height = Math.ceil(data.height) + 'px';
+ });
+ const measure = () => frame.contentWindow.postMessage({type:'ludica:measure'}, origin);
+ frame.addEventListener('load', measure);
+ measure();
+})();
+</script>

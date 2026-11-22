@@ -1,0 +1,17 @@
+tipo,id,edizione,ordine,titolo,contenuto,url,stato,visibile,aperto
+sezione,tema,2026,1,Il tema della scuola,"<p><strong>Come si studia la storia di una Comunità di villaggio?</strong> È questa la domanda che affronteremo al LUDiCa 26 con lezioni metodologiche, approfondimenti seminariali e il contatto diretto col territorio e la comunità.</p>",,,true,true
+sezione,quando,2026,2,Quando si tiene,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+sezione,dove,2026,3,Dove si tiene,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+sezione,funziona,2026,4,Come funziona,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+sezione,partecipanti,2026,5,Chi può partecipare,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+sezione,reti,2026,6,Reti organizzativa e scientifica,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+sezione,restituzione,2026,7,La restituzione pubblica,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+sezione,cfu,2026,8,CFU,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+sezione,borse,2026,9,Borse di studio AIPH,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+sezione,cittadini,2026,10,Cittadini/e di Chiaramonti,Le informazioni di questa sezione saranno pubblicate a breve.,,,true,false
+area,iscrizioni,2026,1,Iscrizioni,,,accedi,true,
+area,studenti,2026,2,Studenti,,,accedi,true,
+area,docenti,2026,3,Docenti e Seminari,,,accedi,true,
+area,esiti,2026,4,Esiti,,,aggiornamento,true,
+area,stampa,2026,5,Stampa e media,,,disponibile,true,
+area,galleria,2026,6,Galleria,,,aggiornamento,true,
